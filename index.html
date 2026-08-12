@@ -4,404 +4,490 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<title>교사용 수업 관리 · 다양한 제어 구조 | 고등학교 1학년 정보</title>
+<title>준비하고, 확인하고, 피드백하는 수업 관리</title>
+<meta name="description" content="고등학교 정보 교과 교사용 수업 관리 포털. 차시를 선택하면 교사용 화면이 열립니다.">
 <style>
   :root{
-    --bg:#0f172a;
-    --bg-soft:#111c33;
-    --panel:#16233d;
-    --panel-2:#1b2c4a;
-    --line:#2a3d61;
-    --line-soft:#22344f;
-    --text:#e8eefb;
-    --text-dim:#a9b8d4;
-    --text-mute:#7b8db0;
-    --accent:#38bdf8;
-    --accent-2:#818cf8;
-    --ok:#34d399;
-    --warn:#fbbf24;
-    --radius:14px;
+    --bg:#eceff0;
+    --surface:#ffffff;
+    --panel:#f5f8f7;
+    --line:#dfe6e4;
+    --ink:#17231f;
+    --ink-soft:#546661;
+    --ink-faint:#889995;
+    --nav:#17605C;
+    --radius:18px;
+    --shadow:0 1px 2px rgba(16,40,38,.05), 0 10px 26px rgba(16,40,38,.09);
+    --shadow-hi:0 2px 6px rgba(16,40,38,.07), 0 18px 42px rgba(16,40,38,.16);
   }
+
   *{box-sizing:border-box;}
-  html,body{margin:0;padding:0;}
+  html{-webkit-text-size-adjust:100%;}
   body{
-    background:
-      radial-gradient(1100px 520px at 12% -8%, rgba(56,189,248,.16), transparent 60%),
-      radial-gradient(900px 460px at 92% 0%, rgba(129,140,248,.14), transparent 62%),
-      var(--bg);
-    color:var(--text);
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
     font-family:"Pretendard","Malgun Gothic","맑은 고딕",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-    line-height:1.6;
+    line-height:1.65;
     -webkit-font-smoothing:antialiased;
-    min-height:100vh;
   }
+  .wrap{max-width:1320px;margin:0 auto;padding:0 24px;}
 
-  /* ── 상단 바 ───────────────────────────────────────── */
-  .topbar{
-    border-bottom:1px solid var(--line);
-    background:rgba(12,20,38,.82);
-    backdrop-filter:blur(10px);
-    position:sticky; top:0; z-index:20;
+  /* ── 머리말 ─────────────────────────────── */
+  .hero{
+    background:linear-gradient(160deg,#0d3A38 0%,#12504C 55%,#17605C 100%);
+    color:#fff;
+    padding:58px 0 66px;
   }
-  .topbar-inner{
-    max-width:1180px; margin:0 auto; padding:14px 24px;
-    display:flex; align-items:center; gap:14px; flex-wrap:wrap;
-  }
-  .brand{display:flex; align-items:center; gap:11px; min-width:0;}
-  .brand-mark{
-    width:36px; height:36px; border-radius:10px; flex:none;
-    background:linear-gradient(135deg,var(--accent),var(--accent-2));
-    display:grid; place-items:center;
-    font-weight:800; font-size:15px; color:#08111f; letter-spacing:-.5px;
-  }
-  .brand-text strong{display:block; font-size:15px; font-weight:700; letter-spacing:-.2px;}
-  .brand-text span{display:block; font-size:12px; color:var(--text-mute);}
-  .topbar-tag{
-    margin-left:auto;
-    font-size:12px; font-weight:700; letter-spacing:.6px;
-    color:var(--warn);
-    border:1px solid rgba(251,191,36,.42);
-    background:rgba(251,191,36,.10);
-    padding:5px 12px; border-radius:999px; white-space:nowrap;
-  }
-
-  /* ── 헤더 ─────────────────────────────────────────── */
-  .wrap{max-width:1180px; margin:0 auto; padding:0 24px;}
-  header.page{padding:44px 0 28px;}
   .eyebrow{
-    font-size:12px; font-weight:700; letter-spacing:2px; color:var(--accent);
-    text-transform:uppercase; margin:0 0 10px;
+    display:inline-block;
+    margin:0 0 16px;
+    padding:6px 14px;
+    border-radius:999px;
+    background:rgba(255,255,255,.14);
+    border:1px solid rgba(255,255,255,.26);
+    font-size:.8rem;
+    font-weight:700;
+    letter-spacing:.06em;
   }
-  h1{
-    margin:0 0 12px;
-    font-size:clamp(26px,3.4vw,38px); font-weight:800; letter-spacing:-.8px; line-height:1.25;
+  .hero h1{
+    margin:0 0 16px;
+    font-size:clamp(1.7rem,4.4vw,2.85rem);
+    font-weight:800;
+    letter-spacing:-.025em;
+    line-height:1.26;
   }
-  h1 em{font-style:normal; color:var(--accent);}
-  .lede{margin:0; max-width:64ch; color:var(--text-dim); font-size:15.5px;}
+  .hero p{
+    margin:0;
+    max-width:52rem;
+    font-size:clamp(.97rem,2vw,1.1rem);
+    color:rgba(255,255,255,.87);
+  }
 
-  .meta-row{
-    display:flex; flex-wrap:wrap; gap:10px; margin-top:22px;
-  }
-  .chip{
-    display:inline-flex; align-items:center; gap:7px;
-    border:1px solid var(--line); background:var(--panel);
-    border-radius:999px; padding:7px 14px; font-size:13px; color:var(--text-dim);
-  }
-  .chip b{color:var(--text); font-weight:700;}
-  .chip .dot{width:7px;height:7px;border-radius:50%;background:var(--ok);flex:none;}
-
-  /* ── 안내 배너 ────────────────────────────────────── */
-  .notice{
-    margin:26px 0 6px;
-    border:1px solid rgba(251,191,36,.30);
-    background:linear-gradient(90deg, rgba(251,191,36,.10), rgba(251,191,36,.03));
-    border-radius:var(--radius);
-    padding:14px 18px;
-    display:flex; gap:12px; align-items:flex-start;
-    font-size:13.5px; color:#f5e6c0;
-  }
-  .notice svg{flex:none; margin-top:2px;}
-  .notice b{color:var(--warn);}
-
-  /* ── 섹션 ────────────────────────────────────────── */
-  .section-head{
-    display:flex; align-items:baseline; gap:12px;
-    margin:40px 0 18px; padding-bottom:12px;
-    border-bottom:1px solid var(--line-soft);
-  }
-  .section-head h2{margin:0; font-size:19px; font-weight:700; letter-spacing:-.3px;}
-  .section-head span{font-size:13px; color:var(--text-mute);}
-
-  /* ── 카드 그리드 ──────────────────────────────────── */
-  .grid{
-    display:grid; gap:18px;
-    grid-template-columns:repeat(auto-fill, minmax(330px, 1fr));
-    padding-bottom:8px;
-  }
-  .card{
-    position:relative;
-    background:linear-gradient(160deg,var(--panel),var(--bg-soft));
+  /* ── 안내 줄 ────────────────────────────── */
+  .guide{margin-top:-32px;}
+  .guide-inner{
+    background:var(--surface);
     border:1px solid var(--line);
     border-radius:var(--radius);
-    padding:22px 22px 20px;
-    display:flex; flex-direction:column;
-    transition:border-color .18s ease, transform .18s ease, box-shadow .18s ease;
-  }
-  .card::before{
-    content:""; position:absolute; left:0; top:16px; bottom:16px; width:3px;
-    border-radius:0 3px 3px 0;
-    background:linear-gradient(180deg,var(--accent),var(--accent-2));
-    opacity:.75;
-  }
-  .card:hover{
-    border-color:rgba(56,189,248,.55);
-    transform:translateY(-3px);
-    box-shadow:0 14px 34px rgba(3,10,25,.55);
-  }
-  .card-top{display:flex; align-items:center; gap:11px; margin-bottom:14px;}
-  .num{
-    width:40px; height:40px; flex:none; border-radius:10px;
-    background:rgba(56,189,248,.13);
-    border:1px solid rgba(56,189,248,.34);
-    color:var(--accent);
-    display:grid; place-items:center;
-    font-size:16px; font-weight:800; letter-spacing:-.5px;
-  }
-  .lesson-label{font-size:12.5px; font-weight:700; color:var(--accent); letter-spacing:.4px;}
-  .lesson-sub{font-size:11.5px; color:var(--text-mute);}
-  .card h3{
-    margin:0 0 14px;
-    font-size:17.5px; font-weight:700; letter-spacing:-.4px; line-height:1.4;
-  }
-  .points{
-    list-style:none; margin:0 0 20px; padding:0;
-    display:flex; flex-direction:column; gap:8px;
-    font-size:13.5px; color:var(--text-dim);
-  }
-  .points li{display:flex; gap:9px; align-items:flex-start;}
-  .points li::before{
-    content:""; width:5px; height:5px; border-radius:50%;
-    background:var(--accent-2); flex:none; margin-top:8px;
-  }
-  .card-foot{margin-top:auto;}
-  .btn{
-    display:flex; align-items:center; justify-content:center; gap:8px;
-    width:100%; padding:12px 16px;
-    border-radius:10px; border:1px solid rgba(56,189,248,.40);
-    background:rgba(56,189,248,.12);
-    color:#d7f0ff; font-size:14.5px; font-weight:700; text-decoration:none;
-    transition:background .16s ease, border-color .16s ease, color .16s ease;
-  }
-  .btn:hover{background:rgba(56,189,248,.24); border-color:var(--accent); color:#fff;}
-  .btn:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
-  .btn svg{transition:transform .16s ease;}
-  .card:hover .btn svg{transform:translateX(3px);}
-
-  /* ── 운영 안내 ────────────────────────────────────── */
-  .guide{
-    margin:14px 0 0;
-    display:grid; gap:16px;
-    grid-template-columns:repeat(auto-fit, minmax(280px,1fr));
+    box-shadow:var(--shadow);
+    padding:20px 26px;
+    display:flex;
+    flex-wrap:wrap;
+    gap:12px 30px;
   }
   .guide-item{
-    border:1px solid var(--line-soft); border-radius:var(--radius);
-    background:var(--panel-2); padding:18px 20px;
+    margin:0;
+    flex:1 1 250px;
+    display:flex;
+    gap:11px;
+    align-items:flex-start;
+    font-size:.92rem;
+    color:var(--ink-soft);
   }
-  .guide-item h4{margin:0 0 8px; font-size:14.5px; font-weight:700;}
-  .guide-item p{margin:0; font-size:13.5px; color:var(--text-dim);}
+  .guide-item b{color:var(--ink);font-weight:700;}
+  .guide-item code{
+    font-family:"Consolas","D2Coding",ui-monospace,monospace;
+    font-size:.86em;
+    background:#eef4f2;
+    border:1px solid #dde8e5;
+    border-radius:5px;
+    padding:1px 5px;
+    color:var(--nav);
+    white-space:nowrap;
+  }
+  .guide-no{
+    flex:0 0 auto;
+    width:23px;height:23px;
+    margin-top:2px;
+    border-radius:8px;
+    background:#e3efec;
+    color:var(--nav);
+    font-size:.75rem;
+    font-weight:800;
+    display:grid;
+    place-items:center;
+  }
 
+  /* ── 단원 ───────────────────────────────── */
+  main{padding:46px 0 76px;}
+  .unit + .unit{margin-top:64px;}
+  .unit-head{
+    display:flex;
+    align-items:baseline;
+    flex-wrap:wrap;
+    gap:6px 14px;
+    padding-bottom:14px;
+    margin-bottom:30px;
+    border-bottom:2px solid #d5dedb;
+  }
+  .unit-tag{
+    font-size:.78rem;
+    font-weight:800;
+    letter-spacing:.07em;
+    color:#fff;
+    background:var(--nav);
+    padding:4px 11px;
+    border-radius:7px;
+  }
+  .unit-head h2{
+    margin:0;
+    font-size:clamp(1.3rem,2.6vw,1.6rem);
+    font-weight:800;
+    letter-spacing:-.02em;
+  }
+  .unit-head .unit-sub{
+    margin:0;
+    color:var(--ink-faint);
+    font-size:.92rem;
+  }
+
+  /* ── 차시 카드 행 (5단 화살표 흐름) ───────── */
+  .steps{
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    gap:36px;
+    list-style:none;
+    margin:0;
+    padding:0 30px 0 0;   /* 오른쪽 여백 = 05 뒤 화살표가 삐져나오지 않도록 */
+  }
+
+  .step{
+    position:relative;
+    padding:9px 0 9px 15px;   /* 왼쪽 15px = 색 탭이 보이는 폭 */
+  }
+  /* 카드 뒤에 겹쳐 보이는 색 탭 */
+  .step::before{
+    content:"";
+    position:absolute;
+    left:0; top:0; bottom:0;
+    width:58px;
+    background:var(--c);
+    border-radius:15px 8px 8px 15px;
+  }
+  /* 다음 차시로 이어지는 화살표 */
+  .step::after{
+    content:"";
+    position:absolute;
+    right:-27px; top:50%;
+    width:22px; height:46px;
+    transform:translateY(-50%);
+    background:var(--c);
+    clip-path:polygon(0 0, 100% 50%, 0 100%);
+  }
+
+  .step-card{
+    position:relative;
+    z-index:1;
+    height:100%;
+    display:flex;
+    flex-direction:column;
+    background:linear-gradient(170deg,var(--surface) 0%,var(--panel) 100%);
+    border:1px solid var(--line);
+    border-radius:14px;
+    box-shadow:var(--shadow);
+    padding:18px 17px 16px;
+    transition:transform .18s ease, box-shadow .18s ease;
+  }
+  .step-card:hover,
+  .step-card:focus-within{
+    transform:translateY(-4px);
+    box-shadow:var(--shadow-hi);
+  }
+
+  .step-head{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:8px;
+    margin-bottom:12px;
+  }
+  .step-num{
+    margin:0;
+    font-size:1.9rem;
+    font-weight:300;
+    line-height:1;
+    letter-spacing:-.03em;
+    color:var(--ink);
+  }
+  .step-kicker{
+    margin:3px 0 0;
+    font-size:.74rem;
+    font-weight:800;
+    letter-spacing:.16em;
+    color:var(--c-ink);
+  }
+  .step-icon{
+    flex:0 0 auto;
+    color:var(--c-ink);
+    opacity:.9;
+  }
+  .step-icon svg{display:block;}
+
+  .step-title{
+    margin:0 0 11px;
+    font-size:1rem;
+    font-weight:800;
+    letter-spacing:-.015em;
+    line-height:1.42;
+    min-height:2.84em;      /* 5장 제목 줄 수를 맞춰 아래가 흔들리지 않게 */
+  }
+  .step-keys{
+    margin:0 0 16px;
+    padding:0;
+    list-style:none;
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+  }
+  .step-keys li{
+    position:relative;
+    padding-left:14px;
+    font-size:.83rem;
+    line-height:1.55;
+    color:var(--ink-soft);
+  }
+  .step-keys li::before{
+    content:"";
+    position:absolute;
+    left:1px; top:.6em;
+    width:5px; height:5px;
+    border-radius:50%;
+    background:var(--c);
+  }
+
+  /* 아래쪽 색 띠가 그대로 「교사용 화면 열기」 버튼.
+     흰 글씨를 얹으므로 탭보다 한 단계 진한 --c-ink 를 쓴다(대비 4.5:1 이상). */
+  .step-go{
+    margin-top:auto;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:7px;
+    padding:11px 12px;
+    border-radius:8px;
+    background:var(--c-ink);
+    color:#fff;
+    font-size:.88rem;
+    font-weight:700;
+    text-decoration:none;
+    transition:filter .15s ease;
+  }
+  .step-go:hover{filter:brightness(1.12);}
+  .step-go:focus-visible{outline:3px solid var(--c-ink);outline-offset:3px;}
+  /* 카드 전체를 눌러도 열리게 한다 */
+  .step-go::after{content:"";position:absolute;inset:0;border-radius:14px;}
+
+  /* ── 꼬리말 ─────────────────────────────── */
   footer{
-    margin-top:52px; padding:24px 0 40px;
-    border-top:1px solid var(--line-soft);
-    font-size:12.5px; color:var(--text-mute);
-    display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap;
+    border-top:1px solid var(--line);
+    background:var(--surface);
+    padding:26px 0 38px;
+  }
+  footer .wrap{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:space-between;
+    gap:6px 20px;
+    color:var(--ink-faint);
+    font-size:.86rem;
   }
 
-  @media (max-width:640px){
-    .wrap, .topbar-inner{padding-left:16px; padding-right:16px;}
-    header.page{padding:30px 0 20px;}
-    .grid{grid-template-columns:1fr;}
+  /* ── 반응형 ─────────────────────────────── */
+  @media (max-width:1180px){
+    /* 한 줄에 다 들어가지 않으면 화살표는 흐름을 오해시키므로 감춘다 */
+    .steps{grid-template-columns:repeat(3,1fr);gap:22px;padding-right:0;}
+    .step::after{display:none;}
+    .step-title{min-height:0;}
+  }
+  @media (max-width:860px){
+    .steps{grid-template-columns:repeat(2,1fr);}
+  }
+  @media (max-width:620px){
+    .wrap{padding:0 18px;}
+    .hero{padding:42px 0 54px;}
+    .guide-inner{padding:18px;}
+    main{padding:36px 0 58px;}
+    .steps{grid-template-columns:1fr;gap:16px;}
+    .step{padding:0 0 0 14px;}
+    .step-num{font-size:1.7rem;}
+    .unit + .unit{margin-top:48px;}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .step-card{transition:none;}
+    .step-card:hover{transform:none;}
   }
   @media print{
-    body{background:#fff; color:#000;}
-    .card{border-color:#bbb;}
+    body{background:#fff;}
+    .hero{background:#17605C;}
+    .step-card{box-shadow:none;}
   }
 </style>
 </head>
 <body>
 
-<div class="topbar">
-  <div class="topbar-inner">
-    <div class="brand">
-      <div class="brand-mark">T</div>
-      <div class="brand-text">
-        <strong>다양한 제어 구조 · 수업 관리</strong>
-        <span>고등학교 1학년 정보</span>
-      </div>
-    </div>
-    <div class="topbar-tag">교사 전용</div>
-  </div>
-</div>
-
-<div class="wrap">
-
-  <header class="page">
-    <p class="eyebrow">Teacher Console</p>
-    <h1>「다양한 제어 구조」<br><em>교사용 수업 관리 포털</em></h1>
-    <p class="lede">
-      1차시부터 5차시까지의 교사용 화면을 한곳에서 엽니다.
-      각 차시 화면에서는 형성평가 결과 분석, 성취 수준별 분포, 지도 시 유의점을 확인할 수 있습니다.
+<header class="hero">
+  <div class="wrap">
+    <p class="eyebrow">고등학교 · 정보 · 교사용</p>
+    <h1>준비하고, 확인하고, 피드백하는 수업 관리</h1>
+    <p>
+      차시별 교사용 화면에서 형성평가 결과와 성취 수준, 지도 시 유의점을 확인할 수 있습니다.<br>
+      아래에서 수업할 차시를 선택하세요.
     </p>
-
-    <div class="meta-row">
-      <span class="chip"><span class="dot"></span>교사용 화면 <b>5개</b></span>
-      <span class="chip">단원 <b>다양한 제어 구조</b></span>
-      <span class="chip">구성 <b>차시당 6단계</b></span>
-      <span class="chip">권장 환경 <b>PC · 태블릿</b></span>
-    </div>
-
-    <div class="notice">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/>
-      </svg>
-      <div>
-        <b>교사 전용 사이트입니다.</b>
-        평가 기준·정답·지도 자료가 포함되어 있으므로 학생에게 이 주소를 공유하지 마세요.
-        수업 중 화면을 띄울 때는 미리 표시 범위를 확인하시기 바랍니다.
-      </div>
-    </div>
-  </header>
-
-  <div class="section-head">
-    <h2>차시별 교사용 화면</h2>
-    <span>카드를 선택하면 해당 차시의 교사용 페이지가 열립니다</span>
   </div>
+</header>
 
-  <div class="grid">
-
-    <!-- 1차시 -->
-    <article class="card">
-      <div class="card-top">
-        <div class="num">01</div>
-        <div>
-          <div class="lesson-label">1차시</div>
-          <div class="lesson-sub">조건문 입문</div>
-        </div>
-      </div>
-      <h3>조건에 따라 달라지는 프로그램</h3>
-      <ul class="points">
-        <li>조건문의 기본 구조와 참·거짓 판단</li>
-        <li>비교 연산자로 조건 식 만들기</li>
-        <li>형성평가 결과 분석 · 오답 유형 확인</li>
-      </ul>
-      <div class="card-foot">
-        <a class="btn" href="./lesson1/">
-          교사용 화면 열기
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-        </a>
-      </div>
-    </article>
-
-    <!-- 2차시 -->
-    <article class="card">
-      <div class="card-top">
-        <div class="num">02</div>
-        <div>
-          <div class="lesson-label">2차시</div>
-          <div class="lesson-sub">다중 조건문</div>
-        </div>
-      </div>
-      <h3>조건이 여러 개라면?</h3>
-      <ul class="points">
-        <li>여러 갈래를 나누는 다중 조건문</li>
-        <li>조건의 순서가 결과를 바꾸는 이유</li>
-        <li>형성평가 결과 분석 · 오답 유형 확인</li>
-      </ul>
-      <div class="card-foot">
-        <a class="btn" href="./lesson2/">
-          교사용 화면 열기
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-        </a>
-      </div>
-    </article>
-
-    <!-- 3차시 -->
-    <article class="card">
-      <div class="card-top">
-        <div class="num">03</div>
-        <div>
-          <div class="lesson-label">3차시</div>
-          <div class="lesson-sub">반복문 입문</div>
-        </div>
-      </div>
-      <h3>for문과 while문으로 구현하는 반복 제어</h3>
-      <ul class="points">
-        <li>횟수가 정해진 반복과 조건에 따른 반복</li>
-        <li>같은 문제를 두 방법으로 비교하기</li>
-        <li>형성평가 결과 분석 · 오답 유형 확인</li>
-      </ul>
-      <div class="card-foot">
-        <a class="btn" href="./lesson3/">
-          교사용 화면 열기
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-        </a>
-      </div>
-    </article>
-
-    <!-- 4차시 -->
-    <article class="card">
-      <div class="card-top">
-        <div class="num">04</div>
-        <div>
-          <div class="lesson-label">4차시</div>
-          <div class="lesson-sub">반복 + 조건</div>
-        </div>
-      </div>
-      <h3>반복하면서 판단하기</h3>
-      <ul class="points">
-        <li>반복문 안에서 조건문으로 걸러내기</li>
-        <li>개수 세기 · 합계 구하기 · 최댓값 찾기</li>
-        <li>형성평가 결과 분석 · 오답 유형 확인</li>
-      </ul>
-      <div class="card-foot">
-        <a class="btn" href="./lesson4/">
-          교사용 화면 열기
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-        </a>
-      </div>
-    </article>
-
-    <!-- 5차시 -->
-    <article class="card">
-      <div class="card-top">
-        <div class="num">05</div>
-        <div>
-          <div class="lesson-label">5차시</div>
-          <div class="lesson-sub">중첩 반복 · 종합</div>
-        </div>
-      </div>
-      <h3>반복 속의 반복, 패턴을 코드로</h3>
-      <ul class="points">
-        <li>중첩 반복문으로 조합과 텍스트 도형 만들기</li>
-        <li>1~5차시 내용을 정리하는 종합 평가</li>
-        <li>종합 형성평가 결과 분석 · 성취 수준 확인</li>
-      </ul>
-      <div class="card-foot">
-        <a class="btn" href="./lesson5/">
-          교사용 화면 열기
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-        </a>
-      </div>
-    </article>
-
-  </div>
-
-  <div class="section-head">
-    <h2>운영 안내</h2>
-    <span>수업 전 확인하세요</span>
-  </div>
-
-  <div class="guide">
-    <div class="guide-item">
-      <h4>차시 순서대로 운영</h4>
-      <p>1차시부터 5차시까지 내용이 이어집니다. 5차시는 앞 차시를 정리하는 종합 평가를 포함합니다.</p>
-    </div>
-    <div class="guide-item">
-      <h4>화면 공유 시 주의</h4>
-      <p>교사용 화면에는 정답과 평가 기준이 표시됩니다. 학생 화면에 그대로 미러링하지 마세요.</p>
-    </div>
-    <div class="guide-item">
-      <h4>최신 상태 유지</h4>
-      <p>차시 내용을 수정한 뒤에는 <code>build-teacher.bat</code>을 실행해 이 사이트를 다시 갱신합니다.</p>
+<section class="guide">
+  <div class="wrap">
+    <div class="guide-inner">
+      <p class="guide-item"><span class="guide-no">1</span><span><b>정답과 평가 기준</b>이 표시됩니다. 학생 화면에 미러링하지 마세요.</span></p>
+      <p class="guide-item"><span class="guide-no">2</span><span><b>차시 순서대로 운영</b>하세요. 5차시는 앞 차시를 정리하는 종합 평가입니다.</span></p>
+      <p class="guide-item"><span class="guide-no">3</span><span><b>내용을 고친 뒤에는</b> <code>build-teacher.bat</code> 으로 이 사이트를 갱신하세요.</span></p>
     </div>
   </div>
+</section>
 
-  <footer>
-    <span>고등학교 1학년 정보 · 다양한 제어 구조 · 교사용 수업 관리 포털</span>
-    <span>교사 전용 · 외부 공유 금지</span>
-  </footer>
+<main>
+  <div class="wrap">
 
-</div>
+    <!-- ══ 단원: 다양한 제어 구조 ══════════════════════════════════
+         단원을 새로 추가할 때는 이 <section class="unit"> 블록을 그대로
+         복사해서 제목과 카드 내용만 바꾼다. 자세한 방법은 CLAUDE.md 참고.
+         학생용 링크·메뉴는 어떤 경우에도 넣지 않는다(교사 전용 사이트).
+    ═════════════════════════════════════════════════════════════ -->
+    <section class="unit">
+      <div class="unit-head">
+        <span class="unit-tag">단원</span>
+        <h2>다양한 제어 구조</h2>
+        <p class="unit-sub">조건문과 반복문으로 문제를 해결하는 5차시 학습 · 차시마다 형성평가 결과 분석·정답표·지도 자료</p>
+      </div>
+
+      <ol class="steps">
+
+        <li class="step" style="--c:#2E8B84; --c-ink:#1F6560;">
+          <div class="step-card">
+            <div class="step-head">
+              <div>
+                <p class="step-num">01</p>
+                <p class="step-kicker">1차시</p>
+              </div>
+              <span class="step-icon" aria-hidden="true">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M6 20V6a2 2 0 0 1 2-2"/><path d="M6 12h8"/><path d="M14 4h4"/><path d="M15 9l3 3-3 3"/>
+                </svg>
+              </span>
+            </div>
+            <h3 class="step-title">조건에 따라 달라지는 프로그램</h3>
+            <ul class="step-keys">
+              <li>조건문의 기본 구조와 참·거짓 판단</li>
+              <li>비교 연산자로 조건 식 만들기</li>
+            </ul>
+            <a class="step-go" href="./lesson1/">교사용 화면 열기<span aria-hidden="true">→</span></a>
+          </div>
+        </li>
+
+        <li class="step" style="--c:#3F9E7E; --c-ink:#2C735B;">
+          <div class="step-card">
+            <div class="step-head">
+              <div>
+                <p class="step-num">02</p>
+                <p class="step-kicker">2차시</p>
+              </div>
+              <span class="step-icon" aria-hidden="true">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M5 4v16"/><path d="M5 8h7"/><path d="M5 16h7"/><circle cx="16.5" cy="8" r="2.5"/><circle cx="16.5" cy="16" r="2.5"/>
+                </svg>
+              </span>
+            </div>
+            <h3 class="step-title">조건이 여러 개라면?</h3>
+            <ul class="step-keys">
+              <li>여러 갈래를 나누는 다중 조건문</li>
+              <li>조건의 순서가 결과를 바꾸는 이유</li>
+            </ul>
+            <a class="step-go" href="./lesson2/">교사용 화면 열기<span aria-hidden="true">→</span></a>
+          </div>
+        </li>
+
+        <li class="step" style="--c:#57A86B; --c-ink:#3E7C4E;">
+          <div class="step-card">
+            <div class="step-head">
+              <div>
+                <p class="step-num">03</p>
+                <p class="step-kicker">3차시</p>
+              </div>
+              <span class="step-icon" aria-hidden="true">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4 10a8 8 0 0 1 13.6-4.4L20 8"/><path d="M20 4v4h-4"/>
+                  <path d="M20 14a8 8 0 0 1-13.6 4.4L4 16"/><path d="M4 20v-4h4"/>
+                </svg>
+              </span>
+            </div>
+            <h3 class="step-title">for문과 while문으로 구현하는 반복 제어</h3>
+            <ul class="step-keys">
+              <li>횟수가 정해진 반복과 조건에 따른 반복</li>
+              <li>같은 문제를 두 방법으로 비교하기</li>
+            </ul>
+            <a class="step-go" href="./lesson3/">교사용 화면 열기<span aria-hidden="true">→</span></a>
+          </div>
+        </li>
+
+        <li class="step" style="--c:#6E9E52; --c-ink:#52753C;">
+          <div class="step-card">
+            <div class="step-head">
+              <div>
+                <p class="step-num">04</p>
+                <p class="step-kicker">4차시</p>
+              </div>
+              <span class="step-icon" aria-hidden="true">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4 5h16l-6.2 7.4V19l-3.6 1.8v-8.4z"/>
+                </svg>
+              </span>
+            </div>
+            <h3 class="step-title">반복하면서 판단하기</h3>
+            <ul class="step-keys">
+              <li>반복문 안에서 조건문으로 걸러내기</li>
+              <li>개수 세기 · 합계 구하기 · 최댓값 찾기</li>
+            </ul>
+            <a class="step-go" href="./lesson4/">교사용 화면 열기<span aria-hidden="true">→</span></a>
+          </div>
+        </li>
+
+        <li class="step" style="--c:#8A9A45; --c-ink:#59662B;">
+          <div class="step-card">
+            <div class="step-head">
+              <div>
+                <p class="step-num">05</p>
+                <p class="step-kicker">5차시</p>
+              </div>
+              <span class="step-icon" aria-hidden="true">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="4" y="4" width="7" height="7" rx="1.6"/><rect x="13" y="4" width="7" height="7" rx="1.6"/>
+                  <rect x="4" y="13" width="7" height="7" rx="1.6"/><rect x="13" y="13" width="7" height="7" rx="1.6"/>
+                </svg>
+              </span>
+            </div>
+            <h3 class="step-title">반복 속의 반복, 패턴을 코드로</h3>
+            <ul class="step-keys">
+              <li>중첩 반복문으로 조합과 텍스트 도형 만들기</li>
+              <li>1~5차시 내용을 정리하는 종합 평가</li>
+            </ul>
+            <a class="step-go" href="./lesson5/">교사용 화면 열기<span aria-hidden="true">→</span></a>
+          </div>
+        </li>
+
+      </ol>
+    </section>
+
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>고등학교 정보 &middot; 교사용 수업 관리 포털</span>
+    <span>교사 전용 &middot; 학생에게 주소를 공유하지 마세요.</span>
+  </div>
+</footer>
 
 </body>
 </html>
