@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>준비하고, 확인하고, 피드백하는 수업 관리</title>
+<meta name="description" content="고등학교 정보 교과 교사용 수업 관리 포털. 차시를 선택하면 교사용 화면이 열립니다.">
+<style>
+  :root{
+    --bg:#eceff0;
+    --surface:#ffffff;
+    --panel:#f5f8f7;
+    --line:#dfe6e4;
+    --ink:#17231f;
+    --ink-soft:#546661;
+    --ink-faint:#889995;
+    --nav:#17605C;
+    --radius:18px;
+    --shadow:0 1px 2px rgba(16,40,38,.05), 0 10px 26px rgba(16,40,38,.09);
+    --shadow-hi:0 2px 6px rgba(16,40,38,.07), 0 18px 42px rgba(16,40,38,.16);
+  }
+
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:"Pretendard","Malgun Gothic","맑은 고딕",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1320px;margin:0 auto;padding:0 24px;}
+
+  /* ── 머리말 ─────────────────────────────── */
+  .hero{
+    background:linear-gradient(160deg,#0d3A38 0%,#12504C 55%,#17605C 100%);
+    color:#fff;
+    padding:58px 0 66px;
+  }
+  .eyebrow{
+    display:inline-block;
+    margin:0 0 16px;
+    padding:6px 14px;
+    border-radius:999px;
+    background:rgba(255,255,255,.14);
+    border:1px solid rgba(255,255,255,.26);
+    font-size:.8rem;
+    font-weight:700;
+    letter-spacing:.06em;
+  }
+  .hero h1{
+    margin:0 0 16px;
+    font-size:clamp(1.7rem,4.4vw,2.85rem);
+    font-weight:800;
+    letter-spacing:-.025em;
+    line-height:1.26;
+  }
+  .hero p{
+    margin:0;
+    max-width:52rem;
+    font-size:clamp(.97rem,2vw,1.1rem);
+    color:rgba(255,255,255,.87);
+  }
+
+  /* ── 안내 줄 ────────────────────────────── */
+  .guide{margin-top:-32px;}
+  .guide-inner{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    padding:20px 26px;
+    display:flex;
+    flex-wrap:wrap;
+    gap:12px 30px;
+  }
+  .guide-item{
+    margin:0;
+    flex:1 1 250px;
+    display:flex;
+    gap:11px;
+    align-items:flex-start;
+    font-size:.92rem;
+    color:var(--ink-soft);
+  }
+  .guide-item b{color:var(--ink);font-weight:700;}
+  .guide-item code{
+    font-family:"Consolas","D2Coding",ui-monospace,monospace;
+    font-size:.86em;
+    background:#eef4f2;
+    border:1px solid #dde8e5;
+    border-radius:5px;
+    padding:1px 5px;
+    color:var(--nav);
+    white-space:nowrap;
+  }
+  .guide-no{
+    flex:0 0 auto;
+    width:23px;height:23px;
+    margin-top:2px;
+    border-radius:8px;
+    background:#e3efec;
+    color:var(--nav);
+    font-size:.75rem;
+    font-weight:800;
+    display:grid;
+    place-items:center;
+  }
+
+  /* ── 단원 ───────────────────────────────── */
+  main{padding:46px 0 76px;}
+  .unit + .unit{margin-top:64px;}
+  .unit-head{
+    display:flex;
+    align-items:baseline;
+    flex-wrap:wrap;
+    gap:6px 14px;
+    padding-bottom:14px;
+    margin-bottom:30px;
+    border-bottom:2px solid #d5dedb;
+  }
+  .unit-tag{
+    font-size:.78rem;
+    font-weight:800;
+    letter-spacing:.07em;
+    color:#fff;
+    background:var(--nav);
+    padding:4px 11px;
+    border-radius:7px;
+  }
+  .unit-head h2{
+    margin:0;
+    font-size:clamp(1.3rem,2.6vw,1.6rem);
+    font-weight:800;
+    letter-spacing:-.02em;
+  }
+  .unit-head .unit-sub{
+    margin:0;
+    color:var(--ink-faint);
+    font-size:.92rem;
+  }
+
+  /* ── 차시 카드 행 (가로 화살표 흐름) ───────
+     한 줄에 놓을 카드 수는 각 단원의 <ol class="steps" style="--n:4"> 로 정한다.
+     값을 적지 않으면 5로 본다. 6개 이상은 카드가 좁아지므로 권하지 않는다. */
+  .steps{
+    display:grid;
+    grid-template-columns:repeat(var(--n,5),1fr);
+    gap:36px;
+    list-style:none;
+    margin:0;
+    padding:0 30px 0 0;   /* 오른쪽 여백 = 05 뒤 화살표가 삐져나오지 않도록 */
+  }
+
+  .step{
+    position:relative;
+    padding:9px 0 9px 15px;   /* 왼쪽 15px = 색 탭이 보이는 폭 */
+  }
+  /* 카드 뒤에 겹쳐 보이는 색 탭 */
+  .step::before{
+    content:"";
+    position:absolute;
+    left:0; top:0; bottom:0;
+    width:58px;
+    background:var(--c);
+    border-radius:15px 8px 8px 15px;
+  }
+  /* 다음 차시로 이어지는 화살표 */
+  .step::after{
+    content:"";
+    position:absolute;
+    right:-27px; top:50%;
+    width:22px; height:46px;
+    transform:translateY(-50%);
+    background:var(--c);
+    clip-path:polygon(0 0, 100% 50%, 0 100%);
+  }
+
+  .step-card{
+    position:relative;
+    z-index:1;
+    height:100%;
+    display:flex;
+    flex-direction:column;
+    background:linear-gradient(170deg,var(--surface) 0%,var(--panel) 100%);
+    border:1px solid var(--line);
+    border-radius:14px;
+    box-shadow:var(--shadow);
+    padding:18px 17px 16px;
+    transition:transform .18s ease, box-shadow .18s ease;
+  }
+  .step-card:hover,
+  .step-card:focus-within{
+    transform:translateY(-4px);
+    box-shadow:var(--shadow-hi);
+  }
+
+  .step-head{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:8px;
+    margin-bottom:12px;
+  }
+  .step-num{
+    margin:0;
+    font-size:1.9rem;
+    font-weight:300;
+    line-height:1;
+    letter-spacing:-.03em;
+    color:var(--ink);
+  }
+  .step-kicker{
+    margin:3px 0 0;
+    font-size:.74rem;
+    font-weight:800;
+    letter-spacing:.16em;
+    color:var(--c-ink);
+  }
+  .step-icon{
+    flex:0 0 auto;
+    color:var(--c-ink);
+    opacity:.9;
+  }
+  .step-icon svg{display:block;}
+
+  .step-title{
+    margin:0 0 11px;
+    font-size:1rem;
+    font-weight:800;
+    letter-spacing:-.015em;
+    line-height:1.42;
+    min-height:2.84em;      /* 5장 제목 줄 수를 맞춰 아래가 흔들리지 않게 */
+  }
+  .step-keys{
+    margin:0 0 16px;
+    padding:0;
+    list-style:none;
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+  }
+  .step-keys li{
+    position:relative;
+    padding-left:14px;
+    font-size:.83rem;
+    line-height:1.55;
+    color:var(--ink-soft);
+  }
+  .step-keys li::before{
+    content:"";
+    position:absolute;
+    left:1px; top:.6em;
+    width:5px; height:5px;
+    border-radius:50%;
+    background:var(--c);
+  }
+
+  /* 아래쪽 색 띠가 그대로 「교사용 화면 열기」 버튼.
+     흰 글씨를 얹으므로 탭보다 한 단계 진한 --c-ink 를 쓴다(대비 4.5:1 이상). */
+  .step-go{
+    margin-top:auto;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:7px;
+    padding:11px 12px;
+    border-radius:8px;
+    background:var(--c-ink);
+    color:#fff;
+    font-size:.88rem;
+    font-weight:700;
+    text-decoration:none;
+    transition:filter .15s ease;
+  }
+  .step-go:hover{filter:brightness(1.12);}
+  .step-go:focus-visible{outline:3px solid var(--c-ink);outline-offset:3px;}
+  /* 카드 전체를 눌러도 열리게 한다 */
+  .step-go::after{content:"";position:absolute;inset:0;border-radius:14px;}
+
+  /* ── 꼬리말 ─────────────────────────────── */
+  footer{
+    border-top:1px solid var(--line);
+    background:var(--surface);
+    padding:26px 0 38px;
+  }
+  footer .wrap{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:space-between;
+    gap:6px 20px;
+    color:var(--ink-faint);
+    font-size:.86rem;
+  }
+
+  /* ── 반응형 ─────────────────────────────── */
+  @media (max-width:1180px){
+    /* 한 줄에 다 들어가지 않으면 화살표는 흐름을 오해시키므로 감춘다 */
+    .steps{grid-template-columns:repeat(3,1fr);gap:22px;padding-right:0;}
+    .step::after{display:none;}
+    .step-title{min-height:0;}
+  }
+  @media (max-width:860px){
+    .steps{grid-template-columns:repeat(2,1fr);}
+  }
+  @media (max-width:620px){
+    .wrap{padding:0 18px;}
+    .hero{padding:42px 0 54px;}
+    .guide-inner{padding:18px;}
+    main{padding:36px 0 58px;}
+    .steps{grid-template-columns:1fr;gap:16px;}
+    .step{padding:0 0 0 14px;}
+    .step-num{font-size:1.7rem;}
+    .unit + .unit{margin-top:48px;}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .step-card{transition:none;}
+    .step-card:hover{transform:none;}
+  }
+  @media print{
+    body{background:#fff;}
+    .hero{background:#17605C;}
+    .step-card{box-shadow:none;}
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <p class="eyebrow">고등학교 · 정보 · 교사용</p>
+    <h1>준비하고, 확인하고, 피드백하는 수업 관리</h1>
+    <p>
+      차시별 교사용 화면에서 형성평가 결과와 성취 수준, 지도 시 유의점을 확인할 수 있습니다.<br>
+      아래에서 수업할 차시를 선택하세요.
+    </p>
+  </div>
+</header>
+
+<section class="guide">
+  <div class="wrap">
+    <div class="guide-inner">
+      <p class="guide-item"><span class="guide-no">1</span><span><b>정답과 평가 기준</b>이 표시됩니다. 학생 화면에 미러링하지 마세요.</span></p>
+      <p class="guide-item"><span class="guide-no">2</span><span><b>차시 순서대로 운영</b>하세요. 각 단원의 마지막 차시는 앞 차시를 정리합니다.</span></p>
+      <p class="guide-item"><span class="guide-no">3</span><span><b>내용을 고친 뒤에는</b> <code>build-teacher.bat</code> 으로 이 사이트를 갱신하세요.</span></p>
+    </div>
+  </div>
+</section>
+
+<main>
+  <div class="wrap">
+
+    <!-- ══ 단원: 다양한 제어 구조 ══════════════════════════════════
+         단원을 새로 추가할 때는 이 <section class="unit"> 블록을 그대로
+         복사해서 제목과 카드 내용만 바꾼다. 자세한 방법은 CLAUDE.md 참고.
+         학생용 링크·메뉴는 어떤 경우에도 넣지 않는다(교사 전용 사이트).
+    ═════════════════════════════════════════════════════════════ -->
+    <section class="unit">
+      <div class="unit-head">
+        <span class="unit-tag">단원</span>
+        <h2>다양한 제어 구조</h2>
+        <p class="unit-sub">조건문과 반복문으로 문제를 해결하는 5차시 학습 · 차시마다 형성평가 결과 분석·정답표·지도 자료</p>
+      </div>
+
+      <ol class="steps" style="--n:5">
+
+        <li class="step" style="--c:#2E8B84; --c-ink:#1F6560;">
+          <div class="step-card">
+            <div class="step-head">
+              <div>
+                <p class="step-num">01</p>
+                <p class="step-kicker">1차시</p>
+              </div>
+              <span class="step-icon" aria-hidden="true">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M6 20V6a2 2 0 0 1 2-2"/><path d="M6 12h8"/><path d="M14 4h4"/><path d="M15 9l3 3-3 3"/>
+                </svg>
+              </span>
+            </div>
+            <h3 class="step-title">조건에 따라 달라지는 프로그램</h3>
+            <ul class="step-keys">
+              <li>조건문의 기본 구조와 참·거짓 판단</li>
+              <li>비교 연산자로 조건 식 만들기</li>
+            </ul>
+            <a class="step-go" href="./lesson3_7/lesson1/">교사용 화면 열기<span aria-hidden="true">→</span></a>
+          </div>
+        </li>
+
+        <li class="step" style="--c:#3F9E7E; --c-ink:#2C735B;">
+          <div class="step-card">
+            <div class="step-head">
+              <div>
+                <p class="step-num">02</p>
+                <p class="step-kicker">2차시</p>
+              </div>
+              <span class="step-icon" aria-hidden="true">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M5 4v16"/><path d="M5 8h7"/><path d="M5 16h7"/><circle cx="16.5" cy="8" r="2.5"/><circle cx="16.5" cy="16" r="2.5"/>
+                </svg>
+              </span>
+            </div>
+            <h3 class="step-title">조건이 여러 개라면?</h3>
+            <ul class="step-keys">
+              <li>여러 갈래를 나누는 다중 조건문</li>
+              <li>조건의 순서가 결과를 바꾸는 이유</li>
+            </ul>
+            <a class="step-go" href="./lesson3_7/lesson2/">교사용 화면 열기<span aria-hidden="true">→</span></a>
+          </div>
+        </li>
+
+        <li class="step" style="--c:#57A86B; --c-ink:#3E7C4E;">
+          <div class="step-card">
+            <div class="step-head">
+              <div>
+                <p class="step-num">03</p>
+                <p class="step-kicker">3차시</p>
+              </div>
+              <span class="step-icon" aria-hidden="true">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4 10a8 8 0 0 1 13.6-4.4L20 8"/><path d="M20 4v4h-4"/>
+                  <path d="M20 14a8 8 0 0 1-13.6 4.4L4 16"/><path d="M4 20v-4h4"/>
+                </svg>
+              </span>
+            </div>
+            <h3 class="step-title">for문과 while문으로 구현하는 반복 제어</h3>
+            <ul class="step-keys">
+              <li>횟수가 정해진 반복과 조건에 따른 반복</li>
+              <li>같은 문제를 두 방법으로 비교하기</li>
+            </ul>
+            <a class="step-go" href="./lesson3_7/lesson3/">교사용 화면 열기<span aria-hidden="true">→</span></a>
+          </div>
+        </li>
+
+        <li class="step" style="--c:#6E9E52; --c-ink:#52753C;">
+          <div class="step-card">
+            <div class="step-head">
+              <div>
+                <p class="step-num">04</p>
+                <p class="step-kicker">4차시</p>
+              </div>
+              <span class="step-icon" aria-hidden="true">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4 5h16l-6.2 7.4V19l-3.6 1.8v-8.4z"/>
+                </svg>
+              </span>
+            </div>
+            <h3 class="step-title">반복하면서 판단하기</h3>
+            <ul class="step-keys">
+              <li>반복문 안에서 조건문으로 걸러내기</li>
+              <li>개수 세기 · 합계 구하기 · 최댓값 찾기</li>
+            </ul>
+            <a class="step-go" href="./lesson3_7/lesson4/">교사용 화면 열기<span aria-hidden="true">→</span></a>
+          </div>
+        </li>
+
+        <li class="step" style="--c:#8A9A45; --c-ink:#59662B;">
+          <div class="step-card">
+            <div class="step-head">
+              <div>
+                <p class="step-num">05</p>
+                <p class="step-kicker">5차시</p>
+              </div>
+              <span class="step-icon" aria-hidden="true">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="4" y="4" width="7" height="7" rx="1.6"/><rect x="13" y="4" width="7" height="7" rx="1.6"/>
+                  <rect x="4" y="13" width="7" height="7" rx="1.6"/><rect x="13" y="13" width="7" height="7" rx="1.6"/>
+                </svg>
+              </span>
+            </div>
+            <h3 class="step-title">반복 속의 반복, 패턴을 코드로</h3>
+            <ul class="step-keys">
+              <li>중첩 반복문으로 조합과 텍스트 도형 만들기</li>
+              <li>1~5차시 내용을 정리하는 종합 평가</li>
+            </ul>
+            <a class="step-go" href="./lesson3_7/lesson5/">교사용 화면 열기<span aria-hidden="true">→</span></a>
+          </div>
+        </li>
+
+      </ol>
+    </section>
+
+    <!-- ══ 단원: 객체를 구현하는 클래스 ═══════════════════════════
+         학생용 링크·메뉴는 어떤 경우에도 넣지 않는다(교사 전용 사이트).
+    ═════════════════════════════════════════════════════════════ -->
+    <section class="unit">
+      <div class="unit-head">
+        <span class="unit-tag">단원</span>
+        <h2>객체를 구현하는 클래스</h2>
+        <p class="unit-sub">클래스와 객체로 문제를 해결하는 4차시 학습 · 차시마다 제출 결과 분석·정답표·지도 자료</p>
+      </div>
+
+      <ol class="steps" style="--n:4">
+
+        <li class="step" style="--c:#3A7FA8; --c-ink:#245A7C;">
+          <div class="step-card">
+            <div class="step-head">
+              <div>
+                <p class="step-num">01</p>
+                <p class="step-kicker">1차시</p>
+              </div>
+              <span class="step-icon" aria-hidden="true">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5"/><path d="M12 12v9"/>
+                </svg>
+              </span>
+            </div>
+            <h3 class="step-title">설계도에서 객체로</h3>
+            <ul class="step-keys">
+              <li>클래스·객체·인스턴스와 속성·기능 이해하기</li>
+              <li>실생활 사물을 클래스와 객체로 표현하기</li>
+            </ul>
+            <a class="step-go" href="./lesson3_8/lesson1/">교사용 화면 열기<span aria-hidden="true">→</span></a>
+          </div>
+        </li>
+
+        <li class="step" style="--c:#4A6FA8; --c-ink:#2F4B7C;">
+          <div class="step-card">
+            <div class="step-head">
+              <div>
+                <p class="step-num">02</p>
+                <p class="step-kicker">2차시</p>
+              </div>
+              <span class="step-icon" aria-hidden="true">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="4" width="7" height="7" rx="1.6"/><rect x="14" y="3" width="7" height="7" rx="1.6"/>
+                  <rect x="14" y="13" width="7" height="7" rx="1.6"/><path d="M10 7.5h4"/><path d="M6.5 11v5.5h7.5"/>
+                </svg>
+              </span>
+            </div>
+            <h3 class="step-title">하나의 클래스, 서로 다른 객체</h3>
+            <ul class="step-keys">
+              <li>파이썬으로 클래스를 선언하고 객체 만들기</li>
+              <li>속성 변경과 메소드 호출로 객체 다루기</li>
+            </ul>
+            <a class="step-go" href="./lesson3_8/lesson2/">교사용 화면 열기<span aria-hidden="true">→</span></a>
+          </div>
+        </li>
+
+        <li class="step" style="--c:#5A63A4; --c-ink:#3A4079;">
+          <div class="step-card">
+            <div class="step-head">
+              <div>
+                <p class="step-num">03</p>
+                <p class="step-kicker">3차시</p>
+              </div>
+              <span class="step-icon" aria-hidden="true">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="7.5" cy="8" r="1.8"/><circle cx="12" cy="6" r="1.8"/><circle cx="16.5" cy="8" r="1.8"/>
+                  <path d="M12 11c2.8 0 5 2 5 4.3 0 1.7-1.3 2.7-2.8 2.7-1 0-1.5-.4-2.2-.4s-1.2.4-2.2.4C8.3 18 7 17 7 15.3 7 13 9.2 11 12 11z"/>
+                </svg>
+              </span>
+            </div>
+            <h3 class="step-title">나만의 반려동물 클래스 만들기</h3>
+            <ul class="step-keys">
+              <li>속성과 메소드를 직접 설계하고 구현하기</li>
+              <li>프로젝트 결과물과 형성평가를 함께 확인</li>
+            </ul>
+            <a class="step-go" href="./lesson3_8/lesson3/">교사용 화면 열기<span aria-hidden="true">→</span></a>
+          </div>
+        </li>
+
+        <li class="step" style="--c:#6E5F9E; --c-ink:#473C74;">
+          <div class="step-card">
+            <div class="step-head">
+              <div>
+                <p class="step-num">04</p>
+                <p class="step-kicker">4차시</p>
+              </div>
+              <span class="step-icon" aria-hidden="true">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0 1 12 0"/>
+                  <path d="M16 5.5a3 3 0 0 1 0 5.8"/><path d="M18.5 20a6 6 0 0 0-2.7-5"/>
+                </svg>
+              </span>
+            </div>
+            <h3 class="step-title">우리 팀의 클래스로 생활 문제 해결하기</h3>
+            <ul class="step-keys">
+              <li>4인 1조 협력 프로젝트 · 모둠별 결과 확인</li>
+              <li>코드는 웹앱 밖의 학생 Python 에서 실행</li>
+            </ul>
+            <a class="step-go" href="./lesson3_8/lesson4/">교사용 화면 열기<span aria-hidden="true">→</span></a>
+          </div>
+        </li>
+
+      </ol>
+    </section>
+
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>고등학교 정보 &middot; 교사용 수업 관리 포털</span>
+    <span>교사 전용 &middot; 학생에게 주소를 공유하지 마세요.</span>
+  </div>
+</footer>
+
+</body>
+</html>
