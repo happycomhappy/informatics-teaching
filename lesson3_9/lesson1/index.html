@@ -1,0 +1,5387 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light" />
+    <meta name="description" content="교사용 · AI·디지털 윤리 활동 제출 현황과 학생 답변 확인" />
+    <meta name="robots" content="noindex" />
+    <title>교사용 · AI·디지털 윤리 활동 제출 현황</title>
+
+    <style data-from="styles/tokens.css">
+/* ------------------------------------------------------------------
+ * 색·간격·글꼴의 «기준값» (명세 9장)
+ *
+ * 주 색상은 남색·파랑, 강조는 청록과 주황을 «조금만» 쓴다.
+ * 윤리적 판단의 선택지에는 빨강·초록을 쓰지 않는다.
+ * 정답·오답처럼 보이면 학생이 눈치를 보며 고르기 때문이다(명세 9.1).
+ * 그래서 아래에 성공(초록)·실패(빨강) 색을 아예 만들어 두지 않았다.
+ * 오류는 «주황 + ⚠ 글자» 로만 알린다.
+ * ------------------------------------------------------------------ */
+:root {
+  /* 남색 계열 — 제목·버튼·강조선 */
+  --navy-900: #0f2547;
+  --navy-800: #16345f;
+  --navy-700: #1b3a6b;
+  --navy-600: #24508f;
+  --navy-100: #e5ecf7;
+  --navy-050: #f2f6fc;
+
+  /* 청록 — 보조 강조 */
+  --teal-700: #0d6c7a;
+  --teal-100: #dff1f3;
+
+  /* 주황 — 주의·오류 표시(색만으로 뜻을 전하지 않는다) */
+  --amber-700: #a75a06;
+  --amber-100: #fdf0dd;
+
+  /* 회색 */
+  --ink-900: #16202e;
+  --ink-700: #37455a;
+  --ink-500: #5d6b80;
+  --ink-300: #9aa6b7;
+  --ink-200: #ccd4de;
+  --ink-100: #e6eaf0;
+  --ink-050: #f5f7fa;
+  --white: #ffffff;
+
+  /* 코드 상자 — 높은 대비 */
+  --code-bg: #14243c;
+  --code-fg: #eef3fb;
+  --code-dim: #9fb6d6;
+
+  /* 간격 */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 24px;
+  --sp-6: 32px;
+  --sp-7: 48px;
+
+  --radius: 12px;
+  --radius-sm: 8px;
+
+  /* 터치 영역 최소 44px (명세 9.1) */
+  --touch: 44px;
+
+  --shadow-1: 0 1px 2px rgba(15, 37, 71, 0.08), 0 2px 8px rgba(15, 37, 71, 0.06);
+  --shadow-2: 0 4px 16px rgba(15, 37, 71, 0.12);
+
+  --font-body: "Pretendard", "Malgun Gothic", "맑은 고딕", system-ui, -apple-system, sans-serif;
+  --font-code: "D2Coding", "Cascadia Mono", "Consolas", "Courier New", monospace;
+
+  /* 본문 최대 너비 — 학생용 (명세 9.1) */
+  --student-width: 760px;
+}
+    </style>
+    <style data-from="styles/common.css">
+/* ------------------------------------------------------------------
+ * 학생용·교사용이 함께 쓰는 부품 (버튼 · 입력 · 카드 · 코드 상자 · 알림)
+ * ------------------------------------------------------------------ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.65;
+  color: var(--ink-900);
+  background: var(--ink-050);
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  line-height: 1.35;
+  word-break: keep-all;
+}
+
+p {
+  margin: 0;
+}
+
+ul,
+ol {
+  margin: 0;
+  padding-left: 1.2em;
+}
+
+/* 초점 표시를 없애지 않는다 (명세 9.3) */
+:focus-visible {
+  outline: 3px solid var(--teal-700);
+  outline-offset: 2px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 100;
+  padding: var(--sp-3) var(--sp-4);
+  background: var(--navy-700);
+  color: var(--white);
+  border-radius: 0 0 var(--radius-sm) 0;
+}
+.skip-link:focus {
+  left: 0;
+}
+
+/* ------------------------------ 카드 ------------------------------ */
+
+.card {
+  background: var(--white);
+  border: 1px solid var(--ink-100);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-1);
+  margin-bottom: var(--sp-4);
+  overflow: hidden;
+}
+
+.card--accent {
+  border-left: 4px solid var(--teal-700);
+}
+
+.card__head {
+  padding: var(--sp-4) var(--sp-4) 0;
+}
+
+.card__eyebrow {
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--navy-600);
+  margin-bottom: var(--sp-1);
+}
+
+.card__title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--navy-900);
+}
+
+.card__desc {
+  margin-top: var(--sp-2);
+  font-size: 0.95rem;
+  color: var(--ink-700);
+}
+
+.card__body {
+  padding: var(--sp-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+}
+
+.subhead {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--navy-800);
+  padding-top: var(--sp-2);
+  border-top: 1px solid var(--ink-100);
+}
+
+.para {
+  color: var(--ink-900);
+}
+
+.quote {
+  margin: 0;
+  padding: var(--sp-3) var(--sp-4);
+  background: var(--teal-100);
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  color: var(--navy-900);
+}
+
+/* ------------------------------ 버튼 ------------------------------ */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  min-height: var(--touch);
+  padding: 0 var(--sp-5);
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  background: var(--ink-100);
+  color: var(--ink-900);
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.btn:hover:not(:disabled) {
+  background: var(--ink-200);
+}
+
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.btn--primary {
+  background: var(--navy-700);
+  color: var(--white);
+}
+.btn--primary:hover:not(:disabled) {
+  background: var(--navy-800);
+}
+
+.btn--ghost {
+  background: var(--white);
+  border-color: var(--ink-200);
+  color: var(--navy-800);
+}
+.btn--ghost:hover:not(:disabled) {
+  background: var(--navy-050);
+}
+
+.btn--tiny {
+  min-height: 36px;
+  padding: 0 var(--sp-3);
+  font-size: 0.85rem;
+  background: var(--white);
+  border-color: var(--ink-200);
+  color: var(--navy-700);
+}
+
+.btn--wide {
+  flex: 1 1 auto;
+}
+
+.btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+}
+
+.btn-row--tools {
+  gap: var(--sp-2);
+}
+
+/* ------------------------------ 입력 ------------------------------ */
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.field__label {
+  font-weight: 600;
+  color: var(--navy-900);
+  font-size: 0.98rem;
+}
+
+.field__help {
+  font-size: 0.85rem;
+  color: var(--ink-500);
+}
+
+.input {
+  width: 100%;
+  min-height: var(--touch);
+  padding: var(--sp-3);
+  font-family: inherit;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--ink-900);
+  background: var(--white);
+  border: 1px solid var(--ink-200);
+  border-radius: var(--radius-sm);
+}
+
+.input:focus {
+  border-color: var(--navy-600);
+}
+
+.input--area {
+  resize: vertical;
+  min-height: 96px;
+}
+
+.input--mono {
+  font-family: var(--font-code);
+}
+
+.input--short {
+  max-width: 220px;
+}
+
+.field__count {
+  font-size: 0.82rem;
+  color: var(--ink-500);
+  text-align: right;
+}
+
+.field__count--ok {
+  color: var(--teal-700);
+  font-weight: 600;
+}
+
+/* 오류는 색 + 아이콘 + 글자로 알린다 (명세 9.3) */
+.field__error {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--amber-700);
+  background: var(--amber-100);
+  border-radius: var(--radius-sm);
+  padding: var(--sp-2) var(--sp-3);
+}
+
+.field--invalid .input {
+  border-color: var(--amber-700);
+  border-width: 2px;
+}
+
+/* ------------------------------ 선택형 ------------------------------ */
+
+.choices {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.choices--invalid {
+  padding: var(--sp-3);
+  border: 2px solid var(--amber-700);
+  border-radius: var(--radius-sm);
+}
+
+.choice {
+  position: relative;
+}
+
+.choice__radio {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+}
+
+/* 선택지 색은 모두 같다. 어떤 보기도 «정답처럼» 보이지 않게 한다(명세 9.1) */
+.choice__label {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-3);
+  min-height: var(--touch);
+  padding: var(--sp-3);
+  border: 1px solid var(--ink-200);
+  border-radius: var(--radius-sm);
+  background: var(--white);
+  cursor: pointer;
+}
+
+.choice__label:hover {
+  background: var(--navy-050);
+}
+
+.choice__mark {
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+  margin-top: 2px;
+  border: 2px solid var(--ink-300);
+  border-radius: 50%;
+  background: var(--white);
+}
+
+.choice__radio:checked + .choice__label {
+  border-color: var(--navy-700);
+  border-width: 2px;
+  background: var(--navy-050);
+  padding: calc(var(--sp-3) - 1px);
+}
+
+.choice__radio:checked + .choice__label .choice__mark {
+  border-color: var(--navy-700);
+  box-shadow: inset 0 0 0 4px var(--navy-700);
+}
+
+.choice__radio:focus-visible + .choice__label {
+  outline: 3px solid var(--teal-700);
+  outline-offset: 2px;
+}
+
+.choice__text {
+  color: var(--ink-900);
+}
+
+/* ------------------------------ 체크박스 ------------------------------ */
+
+.check {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.check__row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-3);
+  min-height: var(--touch);
+  padding: var(--sp-3);
+  border: 1px solid var(--ink-200);
+  border-radius: var(--radius-sm);
+  background: var(--white);
+}
+
+.check__box {
+  width: 22px;
+  height: 22px;
+  margin: 2px 0 0;
+  flex: 0 0 auto;
+  accent-color: var(--navy-700);
+}
+
+.check__label {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--ink-900);
+}
+
+/* ------------------------------ 힌트 조각 ------------------------------ */
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+.chips__note {
+  font-size: 0.8rem;
+  color: var(--ink-500);
+}
+
+.chip {
+  min-height: 32px;
+  padding: 0 var(--sp-3);
+  font-family: var(--font-code);
+  font-size: 0.85rem;
+  color: var(--navy-700);
+  background: var(--navy-050);
+  border: 1px dashed var(--ink-200);
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.chip:hover {
+  background: var(--navy-100);
+}
+
+.hint-notice {
+  font-size: 0.88rem;
+  color: var(--ink-700);
+  background: var(--ink-050);
+  border-left: 3px solid var(--ink-300);
+  padding: var(--sp-2) var(--sp-3);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+
+/* ------------------------------ 코드 상자 ------------------------------ */
+
+.codeblock {
+  margin: 0;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  border: 1px solid var(--navy-900);
+}
+
+.codeblock__cap {
+  padding: var(--sp-2) var(--sp-3);
+  background: var(--navy-900);
+  color: var(--code-dim);
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.codeblock__pre {
+  margin: 0;
+  padding: var(--sp-4);
+  background: var(--code-bg);
+  color: var(--code-fg);
+  font-family: var(--font-code);
+  font-size: 0.95rem;
+  line-height: 1.8;
+  /* 들여쓰기와 줄바꿈을 그대로 지킨다. 가로로만 넘긴다(명세 4.1 화면2) */
+  white-space: pre;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  tab-size: 4;
+}
+
+/* ------------------------------ 알림 ------------------------------ */
+
+.alert {
+  border-radius: var(--radius-sm);
+  padding: var(--sp-3) var(--sp-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.alert--warn {
+  background: var(--amber-100);
+  border: 1px solid var(--amber-700);
+  color: var(--ink-900);
+}
+
+.alert--info {
+  background: var(--navy-050);
+  border: 1px solid var(--navy-100);
+}
+
+.alert__title {
+  font-weight: 700;
+  color: var(--amber-700);
+}
+
+.alert__list {
+  margin: 0;
+  padding-left: 1.2em;
+  font-size: 0.92rem;
+}
+
+.banner {
+  border-radius: var(--radius-sm);
+  padding: var(--sp-3) var(--sp-4);
+  margin-bottom: var(--sp-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  align-items: flex-start;
+}
+
+.banner--warn {
+  background: var(--white);
+  border: 1px solid var(--amber-700);
+}
+
+.banner__title {
+  font-weight: 700;
+  color: var(--amber-700);
+}
+
+.banner__text {
+  font-size: 0.9rem;
+  color: var(--ink-700);
+}
+
+.toast-region {
+  position: fixed;
+  left: 50%;
+  bottom: 96px;
+  transform: translateX(-50%);
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  pointer-events: none;
+  width: min(92vw, 520px);
+}
+
+.toast {
+  background: var(--navy-900);
+  color: var(--white);
+  padding: var(--sp-3) var(--sp-4);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-2);
+  font-size: 0.92rem;
+}
+
+/* ------------------------------ 읽기 전용 되보기 ------------------------------ */
+
+.readback {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--sp-2) 0;
+  border-bottom: 1px dashed var(--ink-100);
+}
+
+.readback:last-child {
+  border-bottom: 0;
+}
+
+.readback__label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--ink-500);
+}
+
+.readback__value {
+  /* 학생이 쓴 줄바꿈을 그대로 살린다 (명세 9.2) */
+  white-space: pre-wrap;
+  color: var(--ink-900);
+}
+    </style>
+    <style data-from="styles/teacher.css">
+/* ------------------------------------------------------------------
+ * 교사용 화면 (명세 9.2)
+ *   · PC 화면에서 정보를 촘촘히 담되 복잡해 보이지 않게 한다
+ *   · 요약 카드 → 거르기 → 차트 → 제출 목록 순서
+ *   · 좁은 화면에서는 표가 카드로 바뀐다
+ * ------------------------------------------------------------------ */
+
+body.teacher {
+  background: var(--ink-050);
+}
+
+.t-head {
+  background: var(--white);
+  border-bottom: 1px solid var(--ink-100);
+}
+
+.t-head__inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: var(--sp-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+
+.t-head__eyebrow {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--navy-600);
+}
+
+.t-head__title {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--navy-900);
+}
+
+.t-main {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: var(--sp-4) var(--sp-4) var(--sp-7);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-5);
+}
+
+.t-section__title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--navy-800);
+  padding-bottom: var(--sp-2);
+  border-bottom: 2px solid var(--navy-100);
+  margin-bottom: var(--sp-3);
+}
+
+/* ------------------------------ 안내 ------------------------------ */
+
+.notice {
+  border-radius: var(--radius-sm);
+  padding: var(--sp-3) var(--sp-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+}
+
+.notice--warn {
+  background: var(--amber-100);
+  border: 2px solid var(--amber-700);
+}
+
+.notice--info {
+  background: var(--navy-050);
+  border: 1px solid var(--navy-100);
+}
+
+.notice__title {
+  font-weight: 700;
+  color: var(--amber-700);
+}
+
+.notice--info .notice__title {
+  color: var(--navy-700);
+}
+
+.notice__text {
+  font-size: 0.9rem;
+  color: var(--ink-700);
+}
+
+/* ------------------------------ 접근 키 ------------------------------ */
+
+.access {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  padding: var(--sp-3);
+  background: var(--navy-050);
+  border-radius: var(--radius-sm);
+}
+
+.access__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  align-items: center;
+}
+
+.access__status {
+  font-size: 0.85rem;
+  color: var(--amber-700);
+}
+
+/* ------------------------------ 자료 불러오기 ------------------------------ */
+
+.load {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-4);
+  padding: var(--sp-4);
+  background: var(--white);
+  border: 1px solid var(--ink-100);
+  border-radius: var(--radius);
+}
+
+.load__title {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--navy-700);
+  margin-bottom: var(--sp-2);
+}
+
+.load__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.load__note {
+  font-size: 0.82rem;
+  color: var(--ink-500);
+}
+
+.dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  min-height: 150px;
+  padding: var(--sp-4);
+  text-align: center;
+  border: 2px dashed var(--ink-200);
+  border-radius: var(--radius-sm);
+  background: var(--navy-050);
+  cursor: pointer;
+}
+
+.dropzone--over {
+  border-color: var(--navy-700);
+  background: var(--navy-100);
+}
+
+.dropzone__title {
+  font-weight: 700;
+  color: var(--navy-800);
+}
+
+.dropzone__text {
+  font-size: 0.85rem;
+  color: var(--ink-500);
+}
+
+@media (max-width: 1024px) {
+  .load {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ------------------------------ 도구 줄 ------------------------------ */
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+}
+
+.toolbar__left,
+.toolbar__right {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-3);
+}
+
+.toolbar__auto {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+.toolbar__autolabel {
+  font-size: 0.9rem;
+  color: var(--ink-700);
+  cursor: pointer;
+}
+
+.toolbar__time {
+  font-size: 0.85rem;
+  color: var(--ink-500);
+}
+
+/* ------------------------------ 요약 카드 ------------------------------ */
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--sp-3);
+}
+
+.stat {
+  background: var(--white);
+  border: 1px solid var(--ink-100);
+  border-radius: var(--radius);
+  padding: var(--sp-4);
+  box-shadow: var(--shadow-1);
+}
+
+.stat--wide {
+  grid-column: span 2;
+}
+
+.stat__label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--ink-500);
+  margin-bottom: var(--sp-1);
+}
+
+.stat__value {
+  font-size: 1.9rem;
+  font-weight: 800;
+  color: var(--navy-800);
+  font-variant-numeric: tabular-nums;
+}
+
+.stat__note {
+  font-size: 0.8rem;
+  color: var(--ink-500);
+}
+
+.countlist {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+}
+
+.countlist__item {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  font-size: 0.9rem;
+  padding: 2px 0;
+  border-bottom: 1px dashed var(--ink-100);
+}
+
+.countlist__num {
+  font-weight: 700;
+  color: var(--navy-700);
+  font-variant-numeric: tabular-nums;
+  flex: 0 0 auto;
+}
+
+/* ------------------------------ 거르기 ------------------------------ */
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+  align-items: flex-end;
+  background: var(--white);
+  border: 1px solid var(--ink-100);
+  border-radius: var(--radius);
+  padding: var(--sp-4);
+}
+
+.filters .field--inline {
+  gap: var(--sp-1);
+}
+
+.field--grow {
+  flex: 1 1 220px;
+}
+
+.filters__actions {
+  margin-left: auto;
+}
+
+/* ------------------------------ 쪽 이동 ------------------------------ */
+
+/* 탭 줄 — [1 주제별 분석] [2 제출 목록] … [한 쪽에 20개씩] 이 한 줄에 나란히 */
+.pagenav {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--sp-3);
+  flex-wrap: wrap;
+  border-bottom: 2px solid var(--navy-100);
+  margin-bottom: var(--sp-1);
+}
+
+.pagetabs {
+  display: flex;
+  gap: var(--sp-2);
+  flex-wrap: wrap;
+}
+
+/* 「한 쪽에」 가 두 줄로 갈라지지 않게 한다 */
+.pagesize {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding-bottom: var(--sp-2);
+}
+
+.pagesize__label {
+  font-size: 0.85rem;
+  color: var(--ink-700);
+  white-space: nowrap;
+}
+
+.pagesize__select {
+  width: auto;
+  min-width: 108px;
+  max-width: none;
+}
+
+.pagetab {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  min-height: var(--touch);
+  padding: 0 var(--sp-4);
+  border: 1px solid var(--ink-100);
+  border-bottom: 0;
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  background: var(--ink-050);
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--ink-500);
+  cursor: pointer;
+  position: relative;
+  top: 2px;
+}
+
+.pagetab:hover {
+  background: var(--navy-050);
+  color: var(--navy-700);
+}
+
+/* 지금 보는 쪽 — 색만이 아니라 «이어진 모양» 으로도 알 수 있게 한다 (명세 9.3) */
+.pagetab--on {
+  background: var(--white);
+  color: var(--navy-900);
+  border-color: var(--navy-100);
+  box-shadow: 0 -2px 0 var(--navy-700) inset;
+}
+
+.pagetab__no {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--ink-200);
+  color: var(--white);
+  font-size: 0.78rem;
+}
+
+.pagetab--on .pagetab__no {
+  background: var(--navy-700);
+}
+
+.pagetab__count {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--teal-700);
+  background: var(--teal-100);
+  border-radius: 999px;
+  padding: 1px var(--sp-2);
+}
+
+.t-page:focus {
+  outline: none;
+}
+
+/* ------------------------------ 차트 ------------------------------ */
+
+.panel {
+  background: var(--white);
+  border: 1px solid var(--ink-100);
+  border-radius: var(--radius);
+  margin-bottom: var(--sp-4);
+  overflow: hidden;
+}
+
+.panel__title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--navy-800);
+  padding: var(--sp-3) var(--sp-4);
+  background: var(--navy-050);
+  border-bottom: 1px solid var(--ink-100);
+}
+
+.panel__body {
+  padding: var(--sp-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+}
+
+.chart__title {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--ink-700);
+  margin-bottom: var(--sp-2);
+}
+
+.chart-note {
+  font-size: 0.85rem;
+  color: var(--ink-500);
+}
+
+.bars {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.bar {
+  display: grid;
+  grid-template-columns: minmax(120px, 260px) 1fr auto;
+  align-items: center;
+  gap: var(--sp-3);
+  font-size: 0.9rem;
+}
+
+.bar__label {
+  color: var(--ink-900);
+}
+
+.bar__track {
+  height: 18px;
+  background: var(--ink-100);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.bar__fill {
+  display: block;
+  height: 100%;
+  background: var(--navy-600);
+  border-radius: 999px;
+  min-width: 2px;
+}
+
+.bar__fill--teal {
+  background: var(--teal-700);
+}
+
+.bar__fill--navy {
+  background: var(--navy-800);
+}
+
+.bar__num {
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-700);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.rawlist {
+  border: 1px solid var(--ink-100);
+  border-radius: var(--radius-sm);
+  padding: var(--sp-2) var(--sp-3);
+  background: var(--ink-050);
+}
+
+.rawlist__summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--navy-700);
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+}
+
+.rawlist__items {
+  list-style: none;
+  padding: var(--sp-2) 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.rawlist__item {
+  background: var(--white);
+  border-radius: var(--radius-sm);
+  padding: var(--sp-2) var(--sp-3);
+}
+
+.rawlist__who {
+  font-size: 0.78rem;
+  color: var(--ink-500);
+  font-weight: 600;
+}
+
+.rawlist__text {
+  white-space: pre-wrap;
+}
+
+.rawlist__empty {
+  font-size: 0.88rem;
+  color: var(--ink-500);
+  padding-top: var(--sp-2);
+}
+
+.teacher-note {
+  background: var(--teal-100);
+  border-left: 3px solid var(--teal-700);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  padding: var(--sp-3);
+}
+
+.teacher-note__label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--teal-700);
+}
+
+.empty {
+  font-size: 0.9rem;
+  color: var(--ink-500);
+  padding: var(--sp-3);
+}
+
+/* ------------------------------ 표 ------------------------------ */
+
+.dtable-wrap {
+  background: var(--white);
+  border: 1px solid var(--ink-100);
+  border-radius: var(--radius);
+  overflow-x: auto;
+}
+
+.dtable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.dtable th,
+.dtable td {
+  padding: var(--sp-2) var(--sp-3);
+  text-align: left;
+  border-bottom: 1px solid var(--ink-100);
+  vertical-align: top;
+}
+
+.dtable thead th {
+  position: sticky;
+  top: 0;
+  background: var(--navy-050);
+  color: var(--navy-800);
+  font-weight: 700;
+  white-space: nowrap;
+  z-index: 1;
+}
+
+.dtable tbody tr:hover {
+  background: var(--navy-050);
+}
+
+.th-sort {
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  min-height: 32px;
+}
+
+.th-sort--on {
+  color: var(--navy-700);
+  text-decoration: underline;
+}
+
+.dtable__empty {
+  text-align: center;
+  color: var(--ink-500);
+  padding: var(--sp-5);
+}
+
+.pager {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  padding: var(--sp-3) 0 0;
+}
+
+.pager__right {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+.pager__info,
+.pager__num {
+  font-size: 0.85rem;
+  color: var(--ink-700);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ------------------------------ 상세 모달 ------------------------------ */
+
+body.modal-open {
+  overflow: hidden;
+}
+
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  background: rgba(15, 37, 71, 0.45);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: var(--sp-4);
+  overflow-y: auto;
+}
+
+.modal__panel {
+  background: var(--white);
+  border-radius: var(--radius);
+  width: min(920px, 100%);
+  margin: auto;
+  box-shadow: var(--shadow-2);
+}
+
+.modal__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  padding: var(--sp-4);
+  border-bottom: 1px solid var(--ink-100);
+  position: sticky;
+  top: 0;
+  background: var(--white);
+  border-radius: var(--radius) var(--radius) 0 0;
+}
+
+.modal__title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--navy-900);
+}
+
+.modal__body {
+  padding: var(--sp-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+}
+
+.dgroup {
+  border: 1px solid var(--ink-100);
+  border-radius: var(--radius-sm);
+  padding: var(--sp-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.dgroup__title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--navy-700);
+}
+
+.drow {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: var(--sp-3);
+  align-items: start;
+  padding: var(--sp-1) 0;
+  border-bottom: 1px dashed var(--ink-100);
+}
+
+.drow:last-child {
+  border-bottom: 0;
+}
+
+.drow__label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--ink-500);
+}
+
+.longtext {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--sp-2);
+}
+
+.longtext__body {
+  /* 학생이 쓴 줄바꿈을 그대로 (명세 9.2) */
+  white-space: pre-wrap;
+}
+
+.longtext__body--clamp {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.dmemo__status {
+  font-size: 0.85rem;
+  color: var(--ink-500);
+  align-self: center;
+}
+
+/* ------------------------------ 좁은 화면 ------------------------------ */
+
+@media (max-width: 1024px) {
+  .stat--wide {
+    grid-column: span 1;
+  }
+  .drow {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
+}
+
+@media (max-width: 768px) {
+  /* 표를 카드로 바꾼다 (명세 6.4) */
+  .dtable thead {
+    display: none;
+  }
+  .dtable,
+  .dtable tbody,
+  .dtable tr,
+  .dtable td {
+    display: block;
+    width: 100%;
+  }
+  .dtable tr {
+    border: 1px solid var(--ink-100);
+    border-radius: var(--radius-sm);
+    margin: var(--sp-3);
+    background: var(--white);
+  }
+  .dtable td {
+    display: grid;
+    grid-template-columns: 110px 1fr;
+    gap: var(--sp-2);
+    border-bottom: 1px dashed var(--ink-100);
+  }
+  .dtable td:last-child {
+    border-bottom: 0;
+  }
+  .dtable td::before {
+    content: attr(data-label);
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--ink-500);
+  }
+  .bar {
+    grid-template-columns: 1fr;
+    gap: var(--sp-1);
+  }
+  .filters__actions {
+    margin-left: 0;
+  }
+}
+
+/* ------------------------------------------------------------------
+ * 인쇄 — 교사용만 (명세 6.5 상세 보기의 [인쇄])
+ *
+ * 상세 모달이 열려 있으면 «그 모달만» 인쇄한다.
+ * 공통 인쇄 규칙은 styles/print.css 에 있다.
+ * ------------------------------------------------------------------ */
+@media print {
+  body.modal-open .t-head,
+  body.modal-open .t-main {
+    display: none !important;
+  }
+
+  body.modal-open .modal {
+    position: static;
+    background: none;
+    padding: 0;
+    overflow: visible;
+    display: block;
+  }
+
+  body.modal-open .modal__panel {
+    box-shadow: none;
+    width: 100%;
+    border-radius: 0;
+  }
+
+  body.modal-open .modal__head {
+    position: static;
+    border-bottom: 2px solid #000;
+  }
+}
+    </style>
+    <style data-from="styles/print.css">
+/* ------------------------------------------------------------------
+ * 인쇄 — 학생용·교사용이 함께 쓰는 부분
+ *
+ * 버튼·고정 막대처럼 «종이에 필요 없는 것» 만 여기서 뺀다.
+ * 교사용 상세 모달만 인쇄하는 규칙은 styles/teacher.css 아래쪽에 있다.
+ * (교사용 표식이 학생용 결과물에 섞이지 않도록 파일을 나눠 두었다)
+ * ------------------------------------------------------------------ */
+@media print {
+  @page {
+    margin: 14mm;
+  }
+
+  body {
+    background: var(--white);
+    padding-bottom: 0;
+  }
+
+  /* 인쇄에 필요 없는 것 */
+  .app-head,
+  .app-foot,
+  .toast-region,
+  .skip-link,
+  .t-head__eyebrow,
+  #toolbar-area,
+  #access-area,
+  #filter-area,
+  .pager,
+  .btn,
+  .chip {
+    display: none !important;
+  }
+
+  /* 접혀 있던 긴 글도 인쇄에서는 모두 보이게 */
+  .longtext__body--clamp {
+    display: block;
+    overflow: visible;
+  }
+
+  details {
+    display: block;
+  }
+
+  details > summary {
+    display: none;
+  }
+
+  .card,
+  .panel,
+  .dgroup,
+  .stat {
+    break-inside: avoid;
+    box-shadow: none;
+    border: 1px solid #999;
+  }
+
+  .codeblock__pre {
+    background: #fff;
+    color: #000;
+    border: 1px solid #999;
+    white-space: pre-wrap;
+  }
+
+  .codeblock__cap {
+    background: #eee;
+    color: #000;
+  }
+
+  a[href]::after {
+    content: "";
+  }
+}
+    </style>
+  </head>
+  <body class="teacher">
+    <a class="skip-link" href="#t-main">본문 바로가기</a>
+
+    <header class="t-head">
+      <div class="t-head__inner">
+        <p class="t-head__eyebrow">고등학교 1학년 정보 · 프로그래밍과 연계한 AI·디지털 윤리</p>
+        <h1 class="t-head__title">AI·디지털 윤리 활동 제출 현황</h1>
+        <div id="notice-area"></div>
+        <div id="access-area"></div>
+        <div id="toolbar-area"></div>
+      </div>
+    </header>
+
+    <main class="t-main" id="t-main">
+      <!-- 명세 9.2 — 요약 카드 → 거르기 순서. 그 아래를 «두 쪽» 으로 나눈다.
+           요약과 거르기는 두 쪽 어디에서나 보이도록 위에 둔다. -->
+      <section class="t-section" aria-labelledby="h-summary">
+        <h2 class="t-section__title" id="h-summary">요약</h2>
+        <div id="summary-area"></div>
+      </section>
+
+      <section class="t-section" aria-labelledby="h-filter">
+        <h2 class="t-section__title" id="h-filter">거르기 · 찾기</h2>
+        <div id="filter-area"></div>
+      </section>
+
+      <!-- 쪽 이동 단추 (1 주제별 분석 · 2 제출 목록) -->
+      <div id="pagenav-area"></div>
+
+      <section
+        class="t-section t-page"
+        id="page-1"
+        role="tabpanel"
+        aria-labelledby="tab-1"
+        tabindex="-1"
+      >
+        <h2 class="t-section__title">주제별 분석</h2>
+        <div id="chart-area"></div>
+      </section>
+
+      <section
+        class="t-section t-page"
+        id="page-2"
+        role="tabpanel"
+        aria-labelledby="tab-2"
+        tabindex="-1"
+        hidden
+      >
+        <h2 class="t-section__title">제출 목록</h2>
+        <div id="table-area"></div>
+      </section>
+    </main>
+
+    <div class="toast-region" id="toast-region" aria-live="polite" aria-atomic="true"></div>
+    <div class="sr-only" id="sr-live" role="status" aria-live="polite"></div>
+
+    <!-- 공통 부품 (학생용과 같은 파일을 읽는다 — 항목 이름이 어긋나지 않게) -->
+    <script data-from="shared/config.js">
+/**
+ * 환경 설정 — ★ 고칠 곳은 여기 한 곳뿐이다 (명세 2장 9번 · 7.2)
+ *
+ * 학생용과 교사용이 같은 파일을 읽는다. 서버 주소를 두 곳에 적는 일이 없다.
+ *
+ * 명세 7.2 는 ES 모듈 형태를 예로 들었다.
+ *
+ *     export const APP_CONFIG = { apiUrl: "...", demoMode: true, ... };
+ *
+ * 이 프로젝트의 결과물은 «파일 하나짜리 HTML» 이라 file:// 로도 열려야 한다.
+ * ES 모듈은 file:// 에서 막히므로 같은 값을 고전 스크립트로 담았다.
+ *
+ * ※ 「수업 코드」는 쓰지 않기로 했다(2026-08-17).
+ *   학생은 학년·반·번호·이름만 넣는다. 같은 학생인지 가리는 기준도
+ *   «학년 + 반 + 번호 + 주제» 네 가지다. shared/schema.js 의 dedupeKey 를 볼 것.
+ */
+(function () {
+  "use strict";
+
+  var APP_CONFIG = {
+    /* ── ① 제출 주소 (Google Apps Script 웹앱 /exec 주소) ───────────
+       비워 두면 학생 화면 «5/5 확인·제출» 에 [제출 주소] 칸이 나온다.
+       선생님이 링크를 보내 주고 학생이 붙여 넣는 방식이다(권장).
+       한 번 넣으면 그 기기에 기억되어 6개 주제 내내 다시 넣지 않아도 된다.
+
+       늘 같은 주소를 쓴다면 여기에 미리 적어 둘 수도 있다.
+       그러면 학생 화면에 칸이 나오지 않는다. */
+    apiUrl: "",
+
+    /* ── ② 데모 모드 ──────────────────────────────────────────────
+       true  : 서버로 보내지 않고 이 기기 안에만 저장한다.
+               («제출 주소» 칸도 나오지 않는다. 화면을 미리 볼 때만 쓴다)
+       false : 실제로 제출한다. 주소는 ① 이나 학생이 넣은 값을 쓴다. */
+    demoMode: false,
+
+    /* ── ③ 임시 저장 키 앞머리 ────────────────────────────────────
+       localStorage 에 저장할 때 쓰는 이름표. 학년도가 바뀌면 v2 로 올린다. */
+    autosaveKeyPrefix: "ai-ethics-draft-v1",
+
+    /* ── ④ 시간 관련 (초) ────────────────────────────────────────
+       readGateSeconds     : 상황 확인 화면에서 [다음] 이 열리기까지 (명세 4.1 화면2)
+       discussionSeconds   : 토론 타이머 길이 (명세 4.1 화면4)
+       teacherRefreshSeconds: 교사용 자동 새로고침 간격 (명세 6.2) */
+    readGateSeconds: 5,
+    discussionSeconds: 180,
+    teacherRefreshSeconds: 30
+  };
+
+  /** 쓸 만한 주소인지 — https 로 시작하고 /exec 로 끝나는 Apps Script 주소인가 */
+  function looksLikeUrl(value) {
+    var url = String(value || "").trim();
+    if (!url) return false;
+    if (url.indexOf("YOUR_") === 0) return false;
+    return /^https?:\/\/.+/i.test(url);
+  }
+
+  /** 설정 파일에 미리 적어 둔 주소 (없으면 빈 문자열) */
+  function fixedUrl() {
+    return looksLikeUrl(APP_CONFIG.apiUrl) ? String(APP_CONFIG.apiUrl).trim() : "";
+  }
+
+  /** 지금 데모 모드인가? — 이제는 설정에서 켰을 때«만» 이다. */
+  function isDemo() {
+    return APP_CONFIG.demoMode === true;
+  }
+
+  /** 학생 화면에 «제출 주소» 칸을 보여야 하는가? */
+  function needsUrlInput() {
+    return !isDemo() && !fixedUrl();
+  }
+
+  /** 데모인 이유를 사람 말로 돌려준다(교사용 안내에 쓴다). */
+  function demoReason() {
+    return isDemo() ? "설정에서 데모 모드가 켜져 있습니다." : "";
+  }
+
+  var root = typeof window !== "undefined" ? window : globalThis;
+  var AE = root.AE || (root.AE = {});
+  AE.CONFIG = APP_CONFIG;
+  AE.config = {
+    looksLikeUrl: looksLikeUrl,
+    fixedUrl: fixedUrl,
+    isDemo: isDemo,
+    needsUrlInput: needsUrlInput,
+    demoReason: demoReason
+  };
+
+  if (typeof module !== "undefined" && module.exports) {
+    module.exports = { APP_CONFIG: APP_CONFIG, isDemo: isDemo, fixedUrl: fixedUrl };
+  }
+})();
+    </script>
+    <script data-from="shared/constants.js">
+/**
+ * 공통 상수 (명세 8장 shared/constants.js)
+ *
+ * 학생용·교사용이 같은 값을 본다. 단계 이름, 생각 변화의 세 가지, 글자 수 기준처럼
+ * «두 곳에서 어긋나면 곤란한 값» 만 여기에 둔다.
+ */
+(function () {
+  "use strict";
+
+  /** 제출 자료의 형태 번호. 항목을 바꾸면 올린다 (명세 7.3 schemaVersion) */
+  var SCHEMA_VERSION = 1;
+
+  /** 이 차시 식별자. 서버가 다른 차시 제출을 걸러내는 데 쓴다. */
+  var LESSON_ID = "lesson3_9_1";
+
+  /**
+   * 학생 화면의 단계 (명세 4.1)
+   * step 0 은 시작 화면이라 «1/5» 번호를 붙이지 않는다.
+   */
+  var STEPS = [
+    { key: "start", label: "시작", counted: false, minutes: null },
+    { key: "situation", label: "상황 확인", counted: true, minutes: 2 },
+    { key: "initial", label: "개인 판단", counted: true, minutes: 2 },
+    { key: "discussion", label: "함께 토론", counted: true, minutes: 3 },
+    { key: "final", label: "최종 판단", counted: true, minutes: 2 },
+    { key: "review", label: "확인·제출", counted: true, minutes: 1 },
+    { key: "done", label: "제출 완료", counted: false, minutes: null }
+  ];
+
+  var STEP_INDEX = {};
+  STEPS.forEach(function (s, i) {
+    STEP_INDEX[s.key] = i;
+  });
+
+  /** 「토론 후 생각이 바뀌었나요?」 — 학생이 직접 고른다. 자동 판정하지 않는다(명세 4.1 화면5) */
+  var CHANGE_TYPES = ["바뀌었다", "더 확실해졌다", "그대로이다"];
+
+  /** 단원 (명세 3장) */
+  var UNITS = [
+    { id: "control", title: "다양한 제어 구조" },
+    { id: "class", title: "객체를 구현하는 클래스" }
+  ];
+
+  /** 입력 검증 기준 (명세 10장) */
+  var LIMITS = {
+    /**
+     * 학번은 «다섯 자리 숫자» 다.  1 03 12  →  1학년 3반 12번
+     *                             │ │  └ 번호 두 자리
+     *                             │ └─── 반   두 자리
+     *                             └───── 학년 한 자리
+     * 학생은 학번 하나만 넣고, 학년·반·번호는 앱이 여기서 갈라 낸다.
+     * 그래야 선생님 화면에서 학년·반으로 거를 수 있다.
+     */
+    studentIdDigits: 5,
+    gradeMin: 1,
+    gradeMax: 3,
+    classMin: 1,
+    classMax: 20,
+    numberMin: 1,
+    numberMax: 60,
+    nameMin: 2,
+    nameMax: 20,
+    /** 토론에서 새롭게 알게 된 점 */
+    insightMin: 10,
+    /** 나의 AI 활용 원칙 */
+    principleMin: 15,
+    /** 최종 이유 — 주제별로 더 길게 요구할 수 있다(topics.js 에서 덮어쓴다) */
+    finalReasonMin: 15,
+    /** 아주 긴 입력은 서버·시트가 감당하지 못하므로 잘라 낸다 */
+    textMax: 1000
+  };
+
+  /**
+   * 데모 모드에서 제출을 담아 두는 자리 (명세 7.1)
+   * 학생용이 여기에 넣고 교사용이 여기서 읽는다. «같은 브라우저 안» 에서만 통한다.
+   * 실제 저장소가 아니라는 것을 두 화면 모두 크게 표시한다.
+   */
+  var DEMO_STORE_KEY = "ai-ethics-demo-submissions-v1";
+
+  /** 화면에 그대로 쓰는 안내 문구 (명세 7.7) */
+  var MESSAGES = {
+    networkFail: "제출하지 못했습니다. 답변은 이 기기에 임시 저장되었습니다.",
+    serverFail: "제출을 처리하지 못했습니다. 잠시 뒤 [다시 제출] 을 눌러 주세요.",
+    privacy: "입력한 정보와 답변은 수업 확인 목적으로만 제출됩니다.",
+    leaveWarn: "작성 중인 답변이 있습니다. 제출을 마치지 않고 나가시겠습니까?"
+  };
+
+  var root = typeof window !== "undefined" ? window : globalThis;
+  var AE = root.AE || (root.AE = {});
+  AE.SCHEMA_VERSION = SCHEMA_VERSION;
+  AE.LESSON_ID = LESSON_ID;
+  AE.STEPS = STEPS;
+  AE.STEP_INDEX = STEP_INDEX;
+  AE.CHANGE_TYPES = CHANGE_TYPES;
+  AE.UNITS = UNITS;
+  AE.LIMITS = LIMITS;
+  AE.MESSAGES = MESSAGES;
+  AE.DEMO_STORE_KEY = DEMO_STORE_KEY;
+
+  if (typeof module !== "undefined" && module.exports) {
+    module.exports = {
+      SCHEMA_VERSION: SCHEMA_VERSION,
+      LESSON_ID: LESSON_ID,
+      STEPS: STEPS,
+      CHANGE_TYPES: CHANGE_TYPES,
+      UNITS: UNITS,
+      LIMITS: LIMITS,
+      MESSAGES: MESSAGES,
+      DEMO_STORE_KEY: DEMO_STORE_KEY
+    };
+  }
+})();
+    </script>
+    <script data-from="shared/topics.js">
+/**
+ * 주제 콘텐츠 6개 (명세 3장 · 5장)
+ *
+ * ★ 화면 코드에는 학습 내용을 적지 않는다. 전부 이 파일에서 읽어 간다(명세 14장 3번).
+ *   학생용은 이 자료로 화면을 그리고, 교사용은 같은 자료로 주제명·선택지·항목 이름을 표시한다.
+ *   그래서 «학생이 낸 것» 과 «교사가 보는 것» 의 항목 이름이 어긋날 수 없다.
+ *
+ * 한 주제의 생김새
+ *   id / unitId / title / concepts / competencies
+ *   situation   : 상황 제시 (문단 · 파이썬 코드 · 사례 목록)
+ *   coreQuestion: 핵심 질문
+ *   initial     : 개인 판단  — 선택지 + 이유 + 주제별 추가 칸
+ *   discussion  : 토론 안내와 질문
+ *   final       : 최종 판단  — 이유 + 주제별 추가 칸 (+ 문장 완성)
+ *   principle   : 나의 AI 활용 원칙 (시작 예시)
+ *
+ * 「교사 핵심 정리」는 여기에 없다. shared/teacher-notes.js 에 따로 두었고
+ * 교사용 화면만 그 파일을 읽는다. 학생용 결과물 안에 모범 답안 글자가
+ * 남지 않게 하기 위해서다(명세 2장 2번 · 11장).
+ *
+ * 코드 문자열의 들여쓰기는 파이썬 문법 그대로다. 고치지 말 것(명세 11장 · 13장).
+ */
+(function () {
+  "use strict";
+
+  var TOPICS = [
+    /* ══════════════════════════════════════════════════════════════
+     * 5.1  control-1
+     * ══════════════════════════════════════════════════════════════ */
+    {
+      id: "control-1",
+      unitId: "control",
+      unitTitle: "다양한 제어 구조",
+      order: 1,
+      title: "AI가 만든 조건문, 그대로 믿어도 될까?",
+      concepts: "if · elif · else · 중첩 조건문",
+      competencies: ["비판적 사고력", "AI 기본소양"],
+
+      situation: {
+        paragraphs: [
+          "생성형 AI에게 자율주행 자동차의 정지 여부를 판단하는 코드를 요청했더니 다음 코드를 작성했다."
+        ],
+        code: 'if distance < 5:\n    print("정지")\nelse:\n    print("주행")',
+        codeCaption: "AI가 제안한 코드 (Python)",
+        afterParagraphs: [
+          "현실의 도로에는 보행자 여부, 신호등 색, 차량 속도, 도로 상태 등 다양한 조건이 존재한다."
+        ]
+      },
+
+      coreQuestion:
+        "이 코드가 문법적으로 맞고 실행된다는 이유만으로 안전한 코드라고 할 수 있을까?",
+
+      initial: {
+        choiceLabel: "이 코드를 어떻게 하는 것이 좋다고 생각하나요?",
+        choices: [
+          "그대로 사용해도 된다",
+          "조건을 보완한 뒤 사용해야 한다",
+          "사용하면 안 된다"
+        ],
+        reason: {
+          key: "reason",
+          label: "이 코드에 빠진 현실의 조건을 1개 이상 쓰고, 그 조건이 필요한 이유를 설명하세요.",
+          min: 20,
+          placeholder: "예) 횡단보도에 사람이 있는지 확인하지 않는다. 거리가 5보다 멀어도 사람이 앞에 있으면…"
+        },
+        fields: []
+      },
+
+      discussion: {
+        guide:
+          "짝 또는 모둠에서 아래 질문을 차례로 이야기해 봅시다. 의견이 다르면 «왜 그렇게 생각했는지» 를 먼저 물어보세요.",
+        questions: [
+          "이 코드에는 어떤 상황이 빠져 있는가?",
+          "AI는 왜 현실의 모든 조건을 자동으로 고려하지 못했을까?",
+          "사고가 발생한다면 “AI가 작성했다”는 이유로 사람이 책임을 피할 수 있을까?"
+        ]
+      },
+
+      final: {
+        reason: {
+          key: "reason",
+          label: "토론까지 마친 뒤, 최종 선택의 이유를 정리해 쓰세요.",
+          min: 15,
+          placeholder: "예) 거리만으로는 판단할 수 없고 여러 조건을 함께 확인해야 하므로…"
+        },
+        fields: [
+          {
+            key: "improvement",
+            short: "추가하고 싶은 조건",
+            label: "elif 또는 중첩 조건문으로 추가하고 싶은 조건을 자연어 또는 코드로 쓰세요.",
+            min: 10,
+            multiline: true,
+            placeholder:
+              '예) 보행자가 있으면 거리와 관계없이 정지한다\n예) elif pedestrian == True:\n        print("정지")',
+            help: "자연어로 써도 되고 코드로 써도 됩니다. 자동 채점하지 않습니다."
+          }
+        ]
+      },
+
+      principle: {
+        label: "나의 AI 활용 원칙을 한 문장으로 쓰세요.",
+        starter: "AI가 만든 조건문을 사용할 때 나는...",
+        placeholder: "AI가 만든 조건문을 사용할 때 나는 …"
+      }
+    },
+
+    /* ══════════════════════════════════════════════════════════════
+     * 5.2  control-2
+     * ══════════════════════════════════════════════════════════════ */
+    {
+      id: "control-2",
+      unitId: "control",
+      unitTitle: "다양한 제어 구조",
+      order: 2,
+      title: "끝나지 않는 AI 코드",
+      concepts: "while · 종료 조건 · 무한 반복",
+      competencies: ["AI 기본소양", "비판적 사고력"],
+
+      situation: {
+        paragraphs: ["생성형 AI가 1부터 10까지 출력하는 코드라며 다음을 제안했다."],
+        code: "i = 1\nwhile i <= 10:\n    print(i)",
+        codeCaption: "AI가 제안한 코드 (Python)",
+        afterParagraphs: []
+      },
+
+      coreQuestion: "AI가 만들어 준 코드는 실행하기 전에 검토할 필요가 있을까?",
+
+      initial: {
+        choiceLabel: "이 코드를 받았을 때 나는 어떻게 하겠습니까?",
+        choices: [
+          "바로 실행한다",
+          "코드를 먼저 검토한다",
+          "AI가 만든 코드이므로 오류가 없다고 본다"
+        ],
+        reason: {
+          key: "reason",
+          label: "이 코드에서 발생할 문제와 그 원인을 설명하세요.",
+          min: 20,
+          placeholder: "예) i 값이 그대로여서 조건이 계속 참이 되고…"
+        },
+        fields: [
+          {
+            key: "missingLine",
+            short: "빠진 코드 한 줄",
+            label: "빠진 코드 한 줄을 직접 입력해 보세요.",
+            min: 2,
+            multiline: false,
+            placeholder: "예) i = i + 1",
+            help: "맞았는지 자동으로 알려 주지 않습니다. 선생님이 함께 확인합니다.",
+            mono: true
+          }
+        ]
+      },
+
+      discussion: {
+        guide:
+          "짝 또는 모둠에서 코드를 한 줄씩 손으로 따라가며 이야기해 봅시다.",
+        questions: [
+          "i의 값은 반복 과정에서 어떻게 변하는가?",
+          "무한 반복이 실제 프로그램이나 기기에 어떤 문제를 일으킬 수 있는가?",
+          "AI에게 어떤 추가 질문을 하면 코드를 더 안전하게 검토할 수 있을까?"
+        ]
+      },
+
+      final: {
+        reason: {
+          key: "reason",
+          label: "토론까지 마친 뒤, 최종 선택의 이유를 정리해 쓰세요.",
+          min: 15,
+          placeholder: "예) 실행 전에 반복이 끝나는 조건을 먼저 확인해야 하므로…"
+        },
+        fields: [
+          {
+            key: "askAgain",
+            short: "AI에게 다시 물어볼 질문",
+            label: "AI에게 다시 물어볼 구체적인 질문 한 문장을 쓰세요.",
+            min: 10,
+            multiline: true,
+            placeholder: "이 코드가 …",
+            help:
+              "도움말 예시 — 이 코드가 무한 반복될 가능성이 있는지 검토하고 이유를 설명해 줘."
+          }
+        ]
+      },
+
+      principle: {
+        label: "나의 AI 활용 원칙을 한 문장으로 쓰세요.",
+        starter: "AI가 만든 반복문을 실행하기 전에 나는...",
+        placeholder: "AI가 만든 반복문을 실행하기 전에 나는 …"
+      }
+    },
+
+    /* ══════════════════════════════════════════════════════════════
+     * 5.3  control-3
+     * ══════════════════════════════════════════════════════════════ */
+    {
+      id: "control-3",
+      unitId: "control",
+      unitTitle: "다양한 제어 구조",
+      order: 3,
+      title: "AI가 고쳐 준 코드, 누구의 책임일까?",
+      concepts: "조건문·반복문 결합 · 디버깅",
+      competencies: ["디지털 시민성", "디지털 도덕성"],
+
+      situation: {
+        paragraphs: [
+          "학생이 조건문과 반복문이 들어 있는 프로그램의 오류를 생성형 AI에게 수정해 달라고 요청했다.",
+          "AI는 수정된 전체 코드를 제안했다."
+        ],
+        code: null,
+        cases: [
+          { label: "학생이 한 일", text: "오류가 나는 프로그램을 AI에게 보여 주고 고쳐 달라고 했다." },
+          { label: "AI가 한 일", text: "어디를 왜 고쳤는지 설명 없이, 수정된 전체 코드를 한 번에 제안했다." },
+          { label: "지금 상황", text: "학생은 그 코드를 그대로 붙여 넣어 과제로 낼 수 있다." }
+        ],
+        afterParagraphs: []
+      },
+
+      coreQuestion: "AI가 코드를 수정했다면 학생은 제출 전에 무엇을 해야 할까?",
+
+      initial: {
+        choiceLabel: "다음 중 가장 바람직한 행동 하나를 고르세요.",
+        choices: [
+          "AI가 수정한 코드를 확인하지 않고 그대로 제출한다.",
+          "수정된 부분을 찾아 직접 실행하고, 수정 이유를 이해한 뒤 활용 사실을 기록한다.",
+          "AI가 수정했다는 사실을 숨기고 자신이 모두 작성했다고 말한다."
+        ],
+        reason: {
+          key: "reason",
+          label: "선택한 행동이 바람직하거나 바람직하지 않은 이유를 설명하세요.",
+          min: 25,
+          placeholder: "예) 코드를 이해하지 못한 채 제출하면 오류가 생겨도…"
+        },
+        fields: []
+      },
+
+      discussion: {
+        guide: "짝 또는 모둠에서 «책임» 이라는 말을 어떻게 쓸 수 있을지 이야기해 봅시다.",
+        questions: [
+          "AI가 고친 코드의 최종 결과에 대한 책임은 누구에게 있는가?",
+          "코드를 실행해 보는 것만으로 충분한가? 왜 그런가?",
+          "AI의 도움을 받은 사실을 어느 정도까지 밝혀야 하는가?"
+        ]
+      },
+
+      final: {
+        reason: {
+          key: "reason",
+          label: "토론까지 마친 뒤, 최종 선택의 이유를 정리해 쓰세요.",
+          min: 15,
+          placeholder: "예) 결과에 책임지는 사람은 제출한 나이므로…"
+        },
+        fields: [],
+        sentence: {
+          label: "다음 문장을 완성하세요.",
+          parts: ["AI가 수정한 코드는 ", "하고, ", "한 뒤 사용하며, ", "을 밝히겠다."],
+          blanks: [
+            { key: "blank1", label: "첫 번째 빈칸", min: 2, placeholder: "예) 어디가 바뀌었는지 확인" },
+            { key: "blank2", label: "두 번째 빈칸", min: 2, placeholder: "예) 직접 실행해 결과를 검증" },
+            { key: "blank3", label: "세 번째 빈칸", min: 2, placeholder: "예) AI를 사용한 부분" }
+          ]
+        }
+      },
+
+      principle: {
+        label: "나의 AI 활용 원칙을 한 문장으로 쓰세요.",
+        starter: "AI가 고쳐 준 코드를 제출할 때 나는...",
+        placeholder: "AI가 고쳐 준 코드를 제출할 때 나는 …",
+        fromSentence: true
+      }
+    },
+
+    /* ══════════════════════════════════════════════════════════════
+     * 5.4  class-1
+     * ══════════════════════════════════════════════════════════════ */
+    {
+      id: "class-1",
+      unitId: "class",
+      unitTitle: "객체를 구현하는 클래스",
+      order: 1,
+      title: "AI가 설계한 클래스, 좋은 설계일까?",
+      concepts: "클래스 · 객체 · 속성 · 메서드",
+      competencies: ["AI 기본소양", "비판적 사고력"],
+
+      situation: {
+        paragraphs: ["생성형 AI가 다음과 같은 반려동물 클래스를 제안했다."],
+        code:
+          "class Pet:\n" +
+          "    def __init__(self, name, age):\n" +
+          "        self.name = name\n" +
+          "        self.age = age\n" +
+          "\n" +
+          "    def eat(self):\n" +
+          '        print("먹습니다.")',
+        codeCaption: "AI가 제안한 클래스 (Python)",
+        afterParagraphs: ["이 클래스를 이용하여 «반려동물 건강 관리 프로그램» 을 만들려고 한다."]
+      },
+
+      coreQuestion: "AI가 만든 클래스가 문법적으로 맞다면 프로젝트 목적에도 알맞은 설계일까?",
+
+      initial: {
+        choiceLabel: "건강 관리 프로그램이라는 목적에서 볼 때 이 설계는 어떤가요?",
+        choices: ["목적에 충분하다", "일부 보완이 필요하다", "전면 재설계가 필요하다"],
+        /* 명세 5.4 의 개인 판단은 «선택 + 속성 + 메서드» 세 가지다.
+           따로 떨어진 이유 칸을 두지 않고, 속성·메서드의 이유가 서술형 역할을 한다. */
+        reason: null,
+        fields: [
+          {
+            key: "property",
+            short: "추가·삭제할 속성",
+            label: "추가하거나 삭제할 속성 1개",
+            min: 2,
+            multiline: false,
+            placeholder: "예) weight 를 추가",
+            hints: ["weight", "food", "vaccine_date", "age 삭제"],
+            mono: false
+          },
+          {
+            key: "propertyReason",
+            short: "속성을 고른 이유",
+            label: "그 속성이 필요하거나 필요 없다고 본 이유",
+            min: 15,
+            multiline: true,
+            placeholder: "예) 건강 관리를 하려면 몸무게 변화를 기록해야 하므로…"
+          },
+          {
+            key: "method",
+            short: "추가·삭제할 메서드",
+            label: "추가하거나 삭제할 메서드 1개",
+            min: 2,
+            multiline: false,
+            placeholder: "예) check_health() 를 추가",
+            hints: ["exercise()", "check_health()", "record_weight()", "eat() 유지"]
+          },
+          {
+            key: "methodReason",
+            short: "메서드를 고른 이유",
+            label: "그 메서드가 필요하거나 필요 없다고 본 이유",
+            min: 15,
+            multiline: true,
+            placeholder: "예) 먹는 기능만으로는 건강 상태를 확인할 수 없으므로…"
+          }
+        ],
+        hintNotice: "아래 힌트는 «정답» 이 아닙니다. 생각을 여는 예시일 뿐이니 자유롭게 바꿔 쓰세요."
+      },
+
+      discussion: {
+        guide: "짝 또는 모둠에서 서로 고른 속성·메서드를 비교해 봅시다.",
+        questions: [
+          "건강 관리라는 목적에 꼭 필요한 정보와 기능은 무엇인가?",
+          "속성과 메서드가 많을수록 좋은 클래스인가?",
+          "AI가 프로젝트의 실제 목적을 완전히 이해하지 못할 수 있는 이유는 무엇인가?"
+        ]
+      },
+
+      final: {
+        reason: {
+          key: "reason",
+          label: "토론까지 마친 뒤, 최종 선택의 이유를 정리해 쓰세요.",
+          min: 15,
+          placeholder: "예) 건강 관리를 하려면 최소한 …이 있어야 하므로…"
+        },
+        fields: [
+          {
+            key: "bestItem",
+            short: "가장 적절한 속성·메서드",
+            label: "토론 후 가장 적절하다고 생각한 속성 또는 메서드",
+            min: 2,
+            multiline: false,
+            placeholder: "예) record_weight()"
+          },
+          {
+            key: "bestReason",
+            short: "선정 이유",
+            label: "그것을 고른 이유",
+            min: 10,
+            multiline: true,
+            placeholder: "예) 친구가 말한 대로 몸무게를 계속 기록해야 변화를 알 수 있어서…"
+          }
+        ]
+      },
+
+      principle: {
+        label: "나의 AI 활용 원칙을 한 문장으로 쓰세요.",
+        starter: "AI가 제안한 클래스 설계를 사용할 때 나는...",
+        placeholder: "AI가 제안한 클래스 설계를 사용할 때 나는 …"
+      }
+    },
+
+    /* ══════════════════════════════════════════════════════════════
+     * 5.5  class-2
+     * ══════════════════════════════════════════════════════════════ */
+    {
+      id: "class-2",
+      unitId: "class",
+      unitTitle: "객체를 구현하는 클래스",
+      order: 2,
+      title: "AI가 만든 프로그램은 누구의 결과물인가?",
+      concepts: "클래스 직접 구현 · 수정 · 창작",
+      competencies: ["디지털 도덕성"],
+
+      situation: {
+        paragraphs: ["두 학생이 생성형 AI에게 «반려동물 클래스를 만들어 줘.» 라고 요청했다."],
+        code: null,
+        cases: [
+          {
+            label: "학생 A",
+            text: "AI가 생성한 전체 코드를 이해하거나 수정하지 않고 그대로 제출했다."
+          },
+          {
+            label: "학생 B",
+            text:
+              "코드를 분석하고 속성 2개와 메서드 1개를 목적에 맞게 변경했으며, AI 활용 과정도 기록했다."
+          }
+        ],
+        afterParagraphs: []
+      },
+
+      coreQuestion: "두 학생의 결과물을 같은 것으로 볼 수 있을까?",
+
+      initial: {
+        choiceLabel: "두 학생의 결과물에 대한 나의 판단은?",
+        choices: ["같은 결과물이다", "다른 결과물이다", "판단하기 어렵다"],
+        reason: {
+          key: "reason",
+          label:
+            "그렇게 판단한 기준을 «코드 이해 · 직접 수정 · AI 활용 공개» 중 2개 이상과 연결하여 설명하세요.",
+          min: 30,
+          placeholder: "예) 학생 B는 코드를 이해하고 직접 수정했으며 활용 사실도 밝혔기 때문에…"
+        },
+        fields: []
+      },
+
+      discussion: {
+        guide: "짝 또는 모둠에서 «어디까지가 내 결과물인가» 를 이야기해 봅시다.",
+        questions: [
+          "AI가 작성한 부분과 학생이 작성한 부분을 어떻게 구분할 수 있는가?",
+          "몇 줄을 수정하면 자신의 결과물이 되는가, 아니면 다른 기준이 필요한가?",
+          "제출할 때 반드시 밝혀야 할 내용은 무엇인가?"
+        ]
+      },
+
+      final: {
+        reason: {
+          key: "reason",
+          label: "토론까지 마친 뒤, 최종 선택의 이유를 정리해 쓰세요.",
+          min: 15,
+          placeholder: "예) 줄 수보다 이해와 판단이 기준이 되어야 하므로…"
+        },
+        fields: [],
+        sentence: {
+          label: "다음 문장을 완성하세요.",
+          parts: ["생성형 AI를 사용했을 때 나는 ", "을 확인하고, ", "을 수정하며, ", "을 밝히겠다."],
+          blanks: [
+            { key: "blank1", label: "첫 번째 빈칸", min: 2, placeholder: "예) 코드가 하는 일" },
+            { key: "blank2", label: "두 번째 빈칸", min: 2, placeholder: "예) 목적에 맞지 않는 부분" },
+            { key: "blank3", label: "세 번째 빈칸", min: 2, placeholder: "예) AI에게 받은 부분" }
+          ]
+        }
+      },
+
+      principle: {
+        label: "나의 AI 활용 원칙을 한 문장으로 쓰세요.",
+        starter: "AI가 만든 코드를 내 결과물로 낼 때 나는...",
+        placeholder: "AI가 만든 코드를 내 결과물로 낼 때 나는 …",
+        fromSentence: true
+      }
+    },
+
+    /* ══════════════════════════════════════════════════════════════
+     * 5.6  class-3
+     * ══════════════════════════════════════════════════════════════ */
+    {
+      id: "class-3",
+      unitId: "class",
+      unitTitle: "객체를 구현하는 클래스",
+      order: 3,
+      title: "우리 팀의 코드에 AI가 참여했다면?",
+      concepts: "협력 프로젝트 · 테스트 · 기록",
+      competencies: ["디지털 시민성", "디지털 도덕성"],
+
+      situation: {
+        paragraphs: ["4명의 학생이 팀 프로젝트를 수행했다."],
+        code: null,
+        cases: [
+          { label: "학생 A", text: "클래스 설계" },
+          { label: "학생 B", text: "메서드 구현" },
+          { label: "학생 C", text: "생성형 AI를 이용해 오류 수정" },
+          { label: "학생 D", text: "테스트" }
+        ],
+        afterParagraphs: [
+          "하지만 발표 자료에는 «우리 팀이 모든 프로그램을 직접 개발했습니다.» 라고 적었다."
+        ]
+      },
+
+      coreQuestion: "이 표현은 적절할까? 팀 프로젝트에서 AI 활용을 어떻게 기록해야 할까?",
+
+      initial: {
+        choiceLabel: "발표 문구에 대한 나의 판단은?",
+        choices: ["적절하다", "일부 수정해야 한다", "적절하지 않다"],
+        reason: {
+          key: "reason",
+          label: "발표 문구의 문제점과 더 적절한 표현을 작성하세요.",
+          min: 30,
+          placeholder:
+            "예) 오류 수정에 AI를 썼는데 «모두 직접» 이라고 하면 사실과 다르다. «오류 수정 과정에서 AI의 도움을 받았고…»"
+        },
+        fields: []
+      },
+
+      discussion: {
+        guide: "모둠에서 우리 팀이라면 무엇을 적어야 할지 이야기해 봅시다.",
+        questions: [
+          "AI를 오류 수정에 사용한 것도 반드시 밝혀야 하는가?",
+          "AI의 제안을 일부만 적용했다면 무엇을 기록해야 하는가?",
+          "최종 테스트와 검증의 책임은 누구에게 있는가?"
+        ]
+      },
+
+      final: {
+        reason: {
+          key: "reason",
+          label: "토론까지 마친 뒤, 최종 선택의 이유를 정리해 쓰세요.",
+          min: 15,
+          placeholder: "예) 어떤 도움을 받았는지 적어야 결과를 정확히 설명할 수 있으므로…"
+        },
+        /* 명세 5.6 «최종 활동: AI 활용 기록 작성» — 5개 항목 */
+        recordTitle: "AI 활용 기록 작성",
+        recordIntro: "우리 팀이 발표 자료에 넣을 기록을 5개 항목으로 나누어 적어 봅시다.",
+        fields: [
+          {
+            key: "purpose",
+            label: "사용 목적",
+            min: 5,
+            multiline: false,
+            placeholder: "예) 실행되지 않는 오류의 원인을 찾기 위해"
+          },
+          {
+            key: "aiSuggestion",
+            label: "AI의 제안",
+            min: 5,
+            multiline: true,
+            placeholder: "예) 반복문의 종료 조건을 바꾸라고 제안했다"
+          },
+          {
+            key: "teamJudgement",
+            label: "우리 팀의 판단",
+            min: 5,
+            multiline: true,
+            placeholder: "예) 종료 조건은 받아들이고 변수 이름 변경은 받아들이지 않았다"
+          },
+          {
+            key: "ourEdits",
+            label: "직접 수정한 내용",
+            min: 5,
+            multiline: true,
+            placeholder: "예) 조건식을 i <= 10 으로 고치고 주석을 새로 달았다"
+          },
+          {
+            key: "verification",
+            label: "최종 확인 방법",
+            min: 5,
+            multiline: true,
+            placeholder: "예) 값 3가지로 직접 실행해 결과를 확인했다"
+          }
+        ]
+      },
+
+      principle: {
+        label: "우리 팀의 AI 활용 원칙을 한 문장으로 쓰세요.",
+        starter: "팀 프로젝트에서 AI를 활용하면 우리 팀은...",
+        placeholder: "팀 프로젝트에서 AI를 활용하면 우리 팀은 …"
+      }
+    }
+  ];
+
+  /* ------------------------------------------------------------------ */
+  /* 조회 도우미                                                          */
+  /* ------------------------------------------------------------------ */
+
+  var BY_ID = {};
+  TOPICS.forEach(function (t) {
+    BY_ID[t.id] = t;
+  });
+
+  /** 주제 하나를 찾는다. 없으면 null (잘못된 ?topic= 값 방어) */
+  function byId(id) {
+    return Object.prototype.hasOwnProperty.call(BY_ID, id) ? BY_ID[id] : null;
+  }
+
+  /** 주제 제목. 알 수 없는 id 면 id 를 그대로 보여 준다(교사용 표에서 빈칸이 되지 않게). */
+  function titleOf(id) {
+    var t = byId(id);
+    return t ? t.title : String(id || "");
+  }
+
+  /** 단원별로 묶는다 — 시작 화면의 주제 카드에 쓴다 */
+  function byUnit() {
+    var units = typeof AE !== "undefined" && AE.UNITS ? AE.UNITS : null;
+    var list = units || [
+      { id: "control", title: "다양한 제어 구조" },
+      { id: "class", title: "객체를 구현하는 클래스" }
+    ];
+    return list.map(function (u) {
+      return {
+        id: u.id,
+        title: u.title,
+        topics: TOPICS.filter(function (t) {
+          return t.unitId === u.id;
+        })
+      };
+    });
+  }
+
+  /**
+   * 한 주제에서 학생이 채우는 «추가 칸» 전체 목록.
+   * 문장 완성의 빈칸도 하나의 칸으로 본다. 검증·요약·CSV 가 모두 이 목록을 쓴다.
+   */
+  function fieldsOf(topic, phase) {
+    if (!topic) return [];
+    var part = phase === "initial" ? topic.initial : topic.final;
+    if (!part) return [];
+    var list = (part.fields || []).slice();
+    if (part.sentence && part.sentence.blanks) {
+      part.sentence.blanks.forEach(function (b) {
+        list.push({
+          key: b.key,
+          label: b.label,
+          min: b.min,
+          placeholder: b.placeholder,
+          multiline: false,
+          fromSentence: true
+        });
+      });
+    }
+    return list;
+  }
+
+  /**
+   * 칸의 «짧은 이름».
+   * label 은 「…을 쓰세요.」 같은 안내 문장이라 요약·표·CSV 머리글에는 길다.
+   * short 가 있으면 그것을, 없으면 label 을 쓴다.
+   */
+  function labelOf(field) {
+    if (!field) return "";
+    return field.short || field.label || field.key || "";
+  }
+
+  /** 문장 완성 미리보기 문자열을 만든다. 비어 있는 빈칸은 밑줄로 남긴다. */
+  function sentencePreview(topic, values) {
+    var s = topic && topic.final ? topic.final.sentence : null;
+    if (!s) return "";
+    var out = "";
+    for (var i = 0; i < s.parts.length; i += 1) {
+      out += s.parts[i];
+      if (i < s.blanks.length) {
+        var v = values && values[s.blanks[i].key] ? String(values[s.blanks[i].key]).trim() : "";
+        out += v || "__________";
+      }
+    }
+    return out;
+  }
+
+  var root = typeof window !== "undefined" ? window : globalThis;
+  var AE = root.AE || (root.AE = {});
+  AE.TOPICS = TOPICS;
+  AE.topics = {
+    all: TOPICS,
+    byId: byId,
+    titleOf: titleOf,
+    byUnit: byUnit,
+    fieldsOf: fieldsOf,
+    labelOf: labelOf,
+    sentencePreview: sentencePreview
+  };
+
+  if (typeof module !== "undefined" && module.exports) {
+    module.exports = {
+      TOPICS: TOPICS,
+      byId: byId,
+      titleOf: titleOf,
+      byUnit: byUnit,
+      fieldsOf: fieldsOf,
+      labelOf: labelOf,
+      sentencePreview: sentencePreview
+    };
+  }
+})();
+    </script>
+    <script data-from="shared/schema.js">
+/**
+ * 제출 자료의 «모양» 과 검사 규칙 (명세 7.3 · 10장 · 14장 4번)
+ *
+ * 학생용은 이 파일로 보낼 자료를 만들고, 교사용은 이 파일로 받은 자료를 읽는다.
+ * 항목 이름이 한 곳에만 적혀 있으므로 두 앱의 필드가 어긋날 수 없다.
+ *
+ * 여기에는 화면 그리는 코드가 없다. 순수한 계산만 있어서 테스트로 바로 확인할 수 있다.
+ */
+(function () {
+  "use strict";
+
+  var root = typeof window !== "undefined" ? window : globalThis;
+  var AE = root.AE || (root.AE = {});
+
+  var LIMITS = AE.LIMITS || {};
+  var CHANGE_TYPES = AE.CHANGE_TYPES || ["바뀌었다", "더 확실해졌다", "그대로이다"];
+  var SCHEMA_VERSION = AE.SCHEMA_VERSION || 1;
+
+  /* ------------------------------------------------------------------ */
+  /* 작은 도구                                                            */
+  /* ------------------------------------------------------------------ */
+
+  /** 문자열로 바꾸고 앞뒤 공백을 없앤다. null·undefined 는 빈 문자열. */
+  function text(value) {
+    if (value === null || value === undefined) return "";
+    return String(value).trim();
+  }
+
+  /** 너무 긴 입력은 잘라 낸다(시트 한 칸의 한계와 통신량 보호). */
+  function clip(value, max) {
+    var s = text(value);
+    var limit = max || LIMITS.textMax || 1000;
+    return s.length > limit ? s.slice(0, limit) : s;
+  }
+
+  /** 공백을 뺀 «내용 글자 수». 스페이스만 눌러서 글자 수를 채우지 못하게 한다. */
+  function contentLength(value) {
+    return text(value).replace(/\s+/g, "").length;
+  }
+
+  /** 정수인지 확인하고 숫자로 돌려준다. 아니면 NaN */
+  function toInt(value) {
+    var s = text(value);
+    if (!/^-?\d+$/.test(s)) return NaN;
+    return parseInt(s, 10);
+  }
+
+  function isRange(n, min, max) {
+    return typeof n === "number" && !isNaN(n) && n >= min && n <= max;
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* 학생 정보 검사 (명세 10장)                                            */
+  /* ------------------------------------------------------------------ */
+
+  /**
+   * 학번을 학년·반·번호로 가른다.  "10312" → { grade:1, classNumber:3, studentNumber:12 }
+   *
+   * 다섯 자리 숫자가 아니거나 갈라 낸 값이 범위를 벗어나면 null 을 돌려준다.
+   * («99999» 처럼 자릿수만 맞는 값을 걸러 내기 위해서다)
+   */
+  function parseStudentId(value) {
+    var s = text(value);
+    if (!new RegExp("^\\d{" + LIMITS.studentIdDigits + "}$").test(s)) return null;
+
+    var grade = parseInt(s.slice(0, 1), 10);
+    var classNumber = parseInt(s.slice(1, 3), 10);
+    var studentNumber = parseInt(s.slice(3, 5), 10);
+
+    if (!isRange(grade, LIMITS.gradeMin, LIMITS.gradeMax)) return null;
+    if (!isRange(classNumber, LIMITS.classMin, LIMITS.classMax)) return null;
+    if (!isRange(studentNumber, LIMITS.numberMin, LIMITS.numberMax)) return null;
+
+    return { grade: grade, classNumber: classNumber, studentNumber: studentNumber };
+  }
+
+  /**
+   * 학년·반·번호를 도로 학번으로 붙인다.  1, 3, 12 → "10312"
+   *
+   * 학번을 쓰기 «전» 에 저장된 옛 자료를 읽을 때 쓴다.
+   * 그때는 학년·반·번호만 있고 학번이 없어서 표와 CSV 의 학번 칸이 비어 버린다.
+   * 값이 온전하지 않으면 빈 문자열을 돌려준다(억지로 만들지 않는다).
+   */
+  function composeStudentId(seat) {
+    var s = seat || {};
+    if (!isRange(s.grade, LIMITS.gradeMin, LIMITS.gradeMax)) return "";
+    if (!isRange(s.classNumber, LIMITS.classMin, LIMITS.classMax)) return "";
+    if (!isRange(s.studentNumber, LIMITS.numberMin, LIMITS.numberMax)) return "";
+    function two(n) {
+      return (n < 10 ? "0" : "") + n;
+    }
+    return String(s.grade) + two(s.classNumber) + two(s.studentNumber);
+  }
+
+  /** 「1학년 3반 12번」 처럼 사람이 읽는 말로 (학번이 이상하면 빈 문자열) */
+  function describeStudentId(value) {
+    var p = parseStudentId(value);
+    if (!p) return "";
+    return p.grade + "학년 " + p.classNumber + "반 " + p.studentNumber + "번";
+  }
+
+  /**
+   * 돌려주는 것 : { ok: true/false, errors: { 항목이름: "메시지" } }
+   * 메시지는 그 항목 «바로 아래» 에 그대로 붙인다(명세 7.7).
+   *
+   * 학생이 넣는 것은 «학번» 과 «이름» 둘뿐이다.
+   */
+  function validateStudent(student) {
+    var errors = {};
+    var s = student || {};
+
+    var id = text(s.studentId);
+    if (!id) {
+      errors.studentId = "학번을 입력해 주세요.";
+    } else if (!/^\d+$/.test(id)) {
+      errors.studentId = "학번은 숫자만 넣어 주세요.";
+    } else if (id.length !== LIMITS.studentIdDigits) {
+      errors.studentId = "학번은 " + LIMITS.studentIdDigits + "자리입니다. 예) 10312 (1학년 3반 12번)";
+    } else if (!parseStudentId(id)) {
+      errors.studentId = "학번을 다시 확인해 주세요. 앞에서부터 학년 1자리, 반 2자리, 번호 2자리입니다.";
+    }
+
+    var name = text(s.name);
+    if (name.length < LIMITS.nameMin || name.length > LIMITS.nameMax) {
+      errors.name = "이름은 " + LIMITS.nameMin + "~" + LIMITS.nameMax + "자로 입력해 주세요.";
+    }
+
+    return { ok: Object.keys(errors).length === 0, errors: errors };
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* 단계별 검사 — 학생용의 [다음] 버튼이 이 결과를 본다                     */
+  /* ------------------------------------------------------------------ */
+
+  /**
+   * 「을 / 를」 을 바르게 붙인다.
+   * 한글 마지막 글자에 받침이 있으면 «을», 없으면 «를» 이다.
+   * (「이유을(를)」 처럼 어색하게 적히지 않게 하려는 것뿐이다)
+   */
+  function josa(word, withBatchim, withoutBatchim) {
+    var s = text(word);
+    if (!s) return s + withoutBatchim;
+    var code = s.charCodeAt(s.length - 1);
+    var isHangul = code >= 0xac00 && code <= 0xd7a3;
+    if (!isHangul) return s + withBatchim + "(" + withoutBatchim + ")";
+    return s + ((code - 0xac00) % 28 !== 0 ? withBatchim : withoutBatchim);
+  }
+
+  /**
+   * 이름표가 「…을 쓰세요.」 같은 «안내 문장» 이면 그대로 오류 문구에 넣을 수 없다.
+   * 그럴 때는 짧게 «이 칸» 이라고 부른다.
+   */
+  function shortLabel(label) {
+    var s = text(label);
+    if (!s) return "";
+    if (s.length > 16) return "";
+    if (/(세요|보세요|합니다|입니다)[.]?$/.test(s)) return "";
+    return s.replace(/[.:]$/, "");
+  }
+
+  /** 서술형 한 칸을 본다. 최소 글자 수는 공백을 뺀 길이로 센다. */
+  function checkText(value, min, label) {
+    var len = contentLength(value);
+    if (len === 0) {
+      var name = shortLabel(label);
+      return name ? josa(name, "을", "를") + " 입력해 주세요." : "이 칸을 채워 주세요.";
+    }
+    if (min && len < min) {
+      return "조금 더 자세히 써 주세요. (공백 제외 " + len + "자 / 최소 " + min + "자)";
+    }
+    return null;
+  }
+
+  /** 개인 판단 단계 (명세 4.1 화면3) */
+  function validateInitial(topic, answer) {
+    var errors = {};
+    var a = answer || {};
+    if (!text(a.choice)) errors.choice = "보기 중 하나를 골라 주세요.";
+    else if (topic.initial.choices.indexOf(text(a.choice)) === -1) {
+      errors.choice = "보기 중 하나를 골라 주세요.";
+    }
+
+    if (topic.initial.reason) {
+      var msg = checkText(a.reason, topic.initial.reason.min, "이유");
+      if (msg) errors.reason = msg;
+    }
+
+    var fields = AE.topics.fieldsOf(topic, "initial");
+    var task = a.taskFields || {};
+    fields.forEach(function (f) {
+      var m = checkText(task[f.key], f.min, f.label);
+      if (m) errors["taskFields." + f.key] = m;
+    });
+
+    return { ok: Object.keys(errors).length === 0, errors: errors };
+  }
+
+  /** 토론 단계 (명세 4.1 화면4) */
+  function validateDiscussion(discussion) {
+    var errors = {};
+    var d = discussion || {};
+    var msg = checkText(d.newInsight, LIMITS.insightMin, "새롭게 알게 된 점");
+    if (msg) errors.newInsight = msg;
+    if (d.completed !== true) errors.completed = "«토론을 마쳤어요» 를 확인해 주세요.";
+    return { ok: Object.keys(errors).length === 0, errors: errors };
+  }
+
+  /** 최종 판단 단계 (명세 4.1 화면5) */
+  function validateFinal(topic, answer, principle) {
+    var errors = {};
+    var a = answer || {};
+
+    if (!text(a.choice)) errors.choice = "최종 선택을 골라 주세요.";
+    else if (topic.initial.choices.indexOf(text(a.choice)) === -1) {
+      errors.choice = "최종 선택을 골라 주세요.";
+    }
+
+    if (topic.final.reason) {
+      var msg = checkText(a.reason, topic.final.reason.min, "최종 이유");
+      if (msg) errors.reason = msg;
+    }
+
+    if (CHANGE_TYPES.indexOf(text(a.changeType)) === -1) {
+      errors.changeType = "토론 후 생각이 어떻게 되었는지 골라 주세요.";
+    }
+
+    var fields = AE.topics.fieldsOf(topic, "final");
+    var task = a.taskFields || {};
+    fields.forEach(function (f) {
+      var m = checkText(task[f.key], f.min, f.label);
+      if (m) errors["taskFields." + f.key] = m;
+    });
+
+    var pm = checkText(principle, LIMITS.principleMin, "나의 AI 활용 원칙");
+    if (pm) errors.personalPrinciple = pm;
+
+    return { ok: Object.keys(errors).length === 0, errors: errors };
+  }
+
+  /** 제출 직전 전체 검사 (명세 4.1 화면6) */
+  function validateAll(topic, state) {
+    var errors = {};
+    function merge(prefix, result) {
+      Object.keys(result.errors).forEach(function (k) {
+        errors[prefix + k] = result.errors[k];
+      });
+    }
+    merge("student.", validateStudent(state.student));
+    merge("initial.", validateInitial(topic, state.initial));
+    merge("discussion.", validateDiscussion(state.discussion));
+    merge("final.", validateFinal(topic, state.final, state.personalPrinciple));
+    if (state.honestyConfirmed !== true) {
+      errors.honestyConfirmed = "정직성 확인에 체크해 주세요.";
+    }
+    return { ok: Object.keys(errors).length === 0, errors: errors };
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* 보낼 자료 만들기 (명세 7.3)                                           */
+  /* ------------------------------------------------------------------ */
+
+  /** 추가 칸을 정해진 키만 남기고 정리한다(모르는 키는 버린다). */
+  function pickTaskFields(topic, phase, values) {
+    var out = {};
+    var src = values || {};
+    AE.topics.fieldsOf(topic, phase).forEach(function (f) {
+      if (Object.prototype.hasOwnProperty.call(src, f.key)) {
+        out[f.key] = clip(src[f.key]);
+      }
+    });
+    return out;
+  }
+
+  /** 현지 시각을 +09:00 형태로 (명세 7.3 clientSubmittedAt) */
+  function localIsoString(date) {
+    var d = date || new Date();
+    function two(n) {
+      return (n < 10 ? "0" : "") + n;
+    }
+    var offsetMin = -d.getTimezoneOffset();
+    var sign = offsetMin >= 0 ? "+" : "-";
+    var abs = Math.abs(offsetMin);
+    return (
+      d.getFullYear() +
+      "-" +
+      two(d.getMonth() + 1) +
+      "-" +
+      two(d.getDate()) +
+      "T" +
+      two(d.getHours()) +
+      ":" +
+      two(d.getMinutes()) +
+      ":" +
+      two(d.getSeconds()) +
+      sign +
+      two(Math.floor(abs / 60)) +
+      ":" +
+      two(abs % 60)
+    );
+  }
+
+  /**
+   * 학생 화면의 상태 → 서버로 보낼 JSON (명세 7.3 그대로)
+   * 서버는 여기서 온 이름·시간을 그대로 믿지 않고 다시 검사한다.
+   */
+  function buildSubmission(state, options) {
+    var opt = options || {};
+    var topic = AE.topics.byId(state.topicId);
+    var s = state.student || {};
+    var id = text(s.studentId);
+    var seat = parseStudentId(id) || {};
+    return {
+      action: "submit",
+      schemaVersion: SCHEMA_VERSION,
+      lessonId: AE.LESSON_ID || "lesson3_9_1",
+      submissionId: text(state.submissionId) || "",
+      student: {
+        studentId: id,
+        name: clip(s.name, LIMITS.nameMax),
+        /* 학번에서 갈라 낸 값도 함께 보낸다.
+           선생님 화면에서 학년·반으로 거르고 자리순으로 정렬하는 데 쓴다. */
+        grade: seat.grade,
+        classNumber: seat.classNumber,
+        studentNumber: seat.studentNumber
+      },
+      topicId: state.topicId,
+      topicTitle: topic ? topic.title : "",
+      initialAnswer: {
+        choice: clip(state.initial && state.initial.choice),
+        reason: clip(state.initial && state.initial.reason),
+        taskFields: pickTaskFields(topic, "initial", state.initial && state.initial.taskFields)
+      },
+      discussion: {
+        newInsight: clip(state.discussion && state.discussion.newInsight),
+        completed: !!(state.discussion && state.discussion.completed)
+      },
+      finalAnswer: {
+        choice: clip(state.final && state.final.choice),
+        reason: clip(state.final && state.final.reason),
+        changeType: clip(state.final && state.final.changeType),
+        taskFields: pickTaskFields(topic, "final", state.final && state.final.taskFields)
+      },
+      personalPrinciple: clip(state.personalPrinciple),
+      honestyConfirmed: state.honestyConfirmed === true,
+      clientSubmittedAt: opt.now ? localIsoString(opt.now) : localIsoString()
+    };
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* 중복 제출 기준 (명세 7.6)                                             */
+  /* ------------------------------------------------------------------ */
+
+  /**
+   * 둘이 같으면 «같은 학생의 같은 활동» 이다.
+   *   studentId + topicId
+   *
+   * · 이름은 넣지 않는다. 동명이인을 같은 학생으로 보지 않기 위해서다.
+   *   (반대로 학생이 이름을 고쳐 다시 내도 같은 제출로 본다)
+   * · 학번 하나가 학년·반·번호를 모두 담고 있으므로 이것으로 충분하다.
+   * · 대신 «학년도가 바뀌면» 10312 가 다시 생긴다.
+   *   해마다 새 폴더를 쓰면 섞이지 않는다. apps-script/README.md 참고.
+   *
+   * ★ 이 규칙은 apps-script/student/Code.gs 의 dedupeKey_ 와 «뜻이 같아야» 한다.
+   *   한쪽만 바뀌면 재제출이 갱신되지 않고 새로 쌓인다.
+   *   tests/apps-script.test.js 가 두 판단이 같은지 자동으로 확인한다.
+   */
+  function dedupeKey(sub) {
+    var s = (sub && sub.student) || {};
+    return [text(s.studentId), text(sub && sub.topicId)].join("|");
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* 받은 자료 읽기 — 교사용                                               */
+  /* ------------------------------------------------------------------ */
+
+  /** 빠진 칸이 있어도 화면이 깨지지 않도록 형태를 맞춘다. */
+  function normalize(raw) {
+    var r = raw || {};
+    var s = r.student || {};
+    var id = text(s.studentId);
+    /* 학년·반·번호가 빠져 있으면 학번에서 갈라 낸다 */
+    var seat = parseStudentId(id);
+    if (!seat) {
+      seat = {
+        grade: toInt(s.grade),
+        classNumber: toInt(s.classNumber),
+        studentNumber: toInt(s.studentNumber)
+      };
+      /* 거꾸로, 학번 없이 저장된 옛 자료라면 학년·반·번호로 학번을 되살린다 */
+      if (!id) id = composeStudentId(seat);
+    }
+    return {
+      submissionId: text(r.submissionId),
+      student: {
+        studentId: id,
+        name: text(s.name),
+        grade: seat.grade,
+        classNumber: seat.classNumber,
+        studentNumber: seat.studentNumber
+      },
+      topicId: text(r.topicId),
+      topicTitle: text(r.topicTitle) || AE.topics.titleOf(r.topicId),
+      initialAnswer: {
+        choice: text(r.initialAnswer && r.initialAnswer.choice),
+        reason: text(r.initialAnswer && r.initialAnswer.reason),
+        taskFields: (r.initialAnswer && r.initialAnswer.taskFields) || {}
+      },
+      discussion: {
+        newInsight: text(r.discussion && r.discussion.newInsight),
+        completed: !!(r.discussion && r.discussion.completed)
+      },
+      finalAnswer: {
+        choice: text(r.finalAnswer && r.finalAnswer.choice),
+        reason: text(r.finalAnswer && r.finalAnswer.reason),
+        changeType: text(r.finalAnswer && r.finalAnswer.changeType),
+        taskFields: (r.finalAnswer && r.finalAnswer.taskFields) || {}
+      },
+      personalPrinciple: text(r.personalPrinciple),
+      honestyConfirmed: r.honestyConfirmed === true,
+      teacherMemo: text(r.teacherMemo),
+      clientSubmittedAt: text(r.clientSubmittedAt),
+      serverSubmittedAt: text(r.serverSubmittedAt),
+      serverUpdatedAt: text(r.serverUpdatedAt),
+      status: text(r.status) || "완료"
+    };
+  }
+
+  /** 정렬용 숫자 — 학번이 곧 순서다 (10312) */
+  function seatOrder(sub) {
+    var s = (sub && sub.student) || {};
+    var n = parseInt(text(s.studentId), 10);
+    if (!isNaN(n)) return n;
+    /* 학번이 없는 옛 자료를 대비한 뒷길 */
+    var g = isNaN(s.grade) ? 0 : s.grade;
+    var c = isNaN(s.classNumber) ? 0 : s.classNumber;
+    var no = isNaN(s.studentNumber) ? 0 : s.studentNumber;
+    return g * 10000 + c * 100 + no;
+  }
+
+  /** 「1학년 3반 12번」 */
+  function seatLabel(sub) {
+    var s = (sub && sub.student) || {};
+    var parts = [];
+    if (!isNaN(s.grade)) parts.push(s.grade + "학년");
+    if (!isNaN(s.classNumber)) parts.push(s.classNumber + "반");
+    if (!isNaN(s.studentNumber)) parts.push(s.studentNumber + "번");
+    return parts.join(" ");
+  }
+
+  /** 「10312 홍길동」 — 표와 상세에서 학생을 가리키는 짧은 이름 */
+  function studentLabel(sub) {
+    var s = (sub && sub.student) || {};
+    return [text(s.studentId), text(s.name)].filter(Boolean).join(" ");
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* 요약 (명세 6.3)                                                      */
+  /* ------------------------------------------------------------------ */
+
+  /**
+   * 숫자로 «윤리 점수» 를 만들지 않는다. 세는 것만 한다(명세 6.3 마지막 문단).
+   */
+  function summarize(subs) {
+    var list = subs || [];
+    var byTopic = {};
+    var changeTypeCounts = {};
+    var students = {};
+
+    CHANGE_TYPES.forEach(function (c) {
+      changeTypeCounts[c] = 0;
+    });
+
+    list.forEach(function (sub) {
+      var tid = sub.topicId || "(주제 없음)";
+      byTopic[tid] = (byTopic[tid] || 0) + 1;
+
+      var ct = sub.finalAnswer && sub.finalAnswer.changeType;
+      if (ct) changeTypeCounts[ct] = (changeTypeCounts[ct] || 0) + 1;
+
+      var s = sub.student || {};
+      students[String(s.studentId || [s.grade, s.classNumber, s.studentNumber].join("-"))] = true;
+    });
+
+    return {
+      totalSubmissions: list.length,
+      uniqueStudents: Object.keys(students).length,
+      byTopic: byTopic,
+      changeTypeCounts: changeTypeCounts
+    };
+  }
+
+  /** 선택형 문항의 응답 분포 (명세 6.6) */
+  function choiceCounts(subs, topicId, phase) {
+    var topic = AE.topics.byId(topicId);
+    if (!topic) return [];
+    var counts = {};
+    topic.initial.choices.forEach(function (c) {
+      counts[c] = 0;
+    });
+    (subs || []).forEach(function (sub) {
+      if (sub.topicId !== topicId) return;
+      var ans = phase === "initial" ? sub.initialAnswer : sub.finalAnswer;
+      var choice = ans && ans.choice;
+      if (choice && Object.prototype.hasOwnProperty.call(counts, choice)) counts[choice] += 1;
+      else if (choice) counts[choice] = (counts[choice] || 0) + 1;
+    });
+    var total = 0;
+    Object.keys(counts).forEach(function (k) {
+      total += counts[k];
+    });
+    return Object.keys(counts).map(function (k) {
+      return {
+        label: k,
+        count: counts[k],
+        percent: total > 0 ? Math.round((counts[k] / total) * 1000) / 10 : 0
+      };
+    });
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* CSV (명세 6.7)                                                       */
+  /* ------------------------------------------------------------------ */
+
+  /**
+   * 엑셀 수식 주입 막기.
+   * = + - @ 또는 탭·캐리지리턴으로 시작하는 값 앞에 작은따옴표를 붙이면
+   * 엑셀이 «글자» 로 읽는다. 학생이 =1+1 이라고 써도 계산되지 않는다.
+   */
+  function guardFormula(value) {
+    var s = value === null || value === undefined ? "" : String(value);
+    if (s.length === 0) return s;
+    if (/^[=+\-@\t\r]/.test(s)) return "'" + s;
+    return s;
+  }
+
+  /** 한 칸을 CSV 규칙에 맞게 감싼다. */
+  function csvCell(value) {
+    var s = guardFormula(value);
+    if (/[",\n\r]/.test(s)) return '"' + s.replace(/"/g, '""') + '"';
+    return s;
+  }
+
+  /**
+   * 지금 화면에 보이는 제출들에 필요한 열을 만든다.
+   * 고정 열 + 주제별 추가 칸(있는 것만).
+   */
+  function csvColumns(subs) {
+    var cols = [
+      { key: "serverSubmittedAt", label: "제출 시각" },
+      { key: "serverUpdatedAt", label: "최종 수정 시각" },
+      { key: "studentId", label: "학번" },
+      { key: "name", label: "이름" },
+      { key: "grade", label: "학년" },
+      { key: "classNumber", label: "반" },
+      { key: "studentNumber", label: "번호" },
+      { key: "topicId", label: "주제 ID" },
+      { key: "topicTitle", label: "주제" },
+      { key: "initialChoice", label: "최초 판단" },
+      { key: "initialReason", label: "최초 이유" },
+      { key: "newInsight", label: "토론에서 새롭게 알게 된 점" },
+      { key: "finalChoice", label: "최종 판단" },
+      { key: "finalReason", label: "최종 이유" },
+      { key: "changeType", label: "생각 변화" },
+      { key: "personalPrinciple", label: "나의 AI 활용 원칙" },
+      { key: "honestyConfirmed", label: "정직성 확인" },
+      { key: "status", label: "제출 상태" },
+      { key: "teacherMemo", label: "교사 메모" }
+    ];
+
+    /* 화면에 있는 주제들의 추가 칸을 열로 펼친다.
+       주제가 섞여 있어도 열 이름이 겹치지 않도록 주제 ID 를 앞에 붙인다. */
+    var seen = {};
+    (subs || []).forEach(function (sub) {
+      if (seen[sub.topicId]) return;
+      seen[sub.topicId] = true;
+      var topic = AE.topics.byId(sub.topicId);
+      if (!topic) return;
+      AE.topics.fieldsOf(topic, "initial").forEach(function (f) {
+        cols.push({
+          key: "initial:" + topic.id + ":" + f.key,
+          label: "[" + topic.id + "] 최초-" + AE.topics.labelOf(f)
+        });
+      });
+      AE.topics.fieldsOf(topic, "final").forEach(function (f) {
+        cols.push({
+          key: "final:" + topic.id + ":" + f.key,
+          label: "[" + topic.id + "] 최종-" + AE.topics.labelOf(f)
+        });
+      });
+    });
+
+    return cols;
+  }
+
+  /** 열 하나의 값을 제출에서 꺼낸다. */
+  function cellValue(sub, key) {
+    if (key.indexOf(":") !== -1) {
+      var parts = key.split(":");
+      var phase = parts[0];
+      var topicId = parts[1];
+      var fieldKey = parts[2];
+      if (sub.topicId !== topicId) return "";
+      var ans = phase === "initial" ? sub.initialAnswer : sub.finalAnswer;
+      var tf = (ans && ans.taskFields) || {};
+      return tf[fieldKey] === undefined ? "" : String(tf[fieldKey]);
+    }
+    var s = sub.student || {};
+    switch (key) {
+      case "studentId":
+        return s.studentId || "";
+      case "grade":
+        return isNaN(s.grade) ? "" : String(s.grade);
+      case "classNumber":
+        return isNaN(s.classNumber) ? "" : String(s.classNumber);
+      case "studentNumber":
+        return isNaN(s.studentNumber) ? "" : String(s.studentNumber);
+      case "name":
+        return s.name || "";
+      case "initialChoice":
+        return (sub.initialAnswer && sub.initialAnswer.choice) || "";
+      case "initialReason":
+        return (sub.initialAnswer && sub.initialAnswer.reason) || "";
+      case "newInsight":
+        return (sub.discussion && sub.discussion.newInsight) || "";
+      case "finalChoice":
+        return (sub.finalAnswer && sub.finalAnswer.choice) || "";
+      case "finalReason":
+        return (sub.finalAnswer && sub.finalAnswer.reason) || "";
+      case "changeType":
+        return (sub.finalAnswer && sub.finalAnswer.changeType) || "";
+      case "honestyConfirmed":
+        return sub.honestyConfirmed ? "확인함" : "";
+      default:
+        return sub[key] === undefined || sub[key] === null ? "" : String(sub[key]);
+    }
+  }
+
+  /**
+   * CSV 본문을 만든다. 맨 앞의 ﻿ 가 «UTF-8 BOM» 이다.
+   * 이것이 있어야 엑셀이 한글을 깨뜨리지 않고 연다(명세 6.7).
+   */
+  function toCsv(subs) {
+    var cols = csvColumns(subs);
+    var lines = [];
+    lines.push(
+      cols
+        .map(function (c) {
+          return csvCell(c.label);
+        })
+        .join(",")
+    );
+    (subs || []).forEach(function (sub) {
+      lines.push(
+        cols
+          .map(function (c) {
+            return csvCell(cellValue(sub, c.key));
+          })
+          .join(",")
+      );
+    });
+    return "﻿" + lines.join("\r\n") + "\r\n";
+  }
+
+  /** 파일 이름 — 예) AI디지털윤리_control-1_1학년3반_2026-08-17.csv (명세 6.7) */
+  function csvFileName(filters, now) {
+    var d = now || new Date();
+    function two(n) {
+      return (n < 10 ? "0" : "") + n;
+    }
+    var date = d.getFullYear() + "-" + two(d.getMonth() + 1) + "-" + two(d.getDate());
+    var parts = ["AI디지털윤리"];
+    if (filters && filters.topicId) parts.push(filters.topicId);
+    var seat = "";
+    if (filters && filters.grade) seat += filters.grade + "학년";
+    if (filters && filters.classNumber) seat += filters.classNumber + "반";
+    if (seat) parts.push(seat);
+    parts.push(date);
+    /* 파일 이름에 쓸 수 없는 글자를 없앤다(윈도우 기준) */
+    return parts.join("_").replace(/[\\/:*?"<>|]/g, "") + ".csv";
+  }
+
+  /**
+   * 오류 목록에 쓸 «어디의 무엇인지» 한 줄.
+   *   "최초 판단 · 빠진 코드 한 줄 — 이 칸을 채워 주세요."
+   * validateAll 이 준 열쇠(initial.taskFields.missingLine)를 사람 말로 바꾼다.
+   */
+  function describeError(topic, key, message) {
+    var sections = {
+      student: "학생 정보",
+      initial: "최초 판단",
+      discussion: "토론",
+      final: "최종 판단",
+      honestyConfirmed: "정직성 확인"
+    };
+    var head = key.split(".")[0];
+    var section = sections[head] || "";
+    var fieldName = "";
+
+    var mark = "taskFields.";
+    var at = key.indexOf(mark);
+    if (at !== -1 && topic) {
+      var fieldKey = key.slice(at + mark.length);
+      var phase = head === "initial" ? "initial" : "final";
+      AE.topics.fieldsOf(topic, phase).forEach(function (f) {
+        if (f.key === fieldKey) fieldName = AE.topics.labelOf(f);
+      });
+    } else if (/personalPrinciple$/.test(key)) {
+      fieldName = "나의 AI 활용 원칙";
+    }
+
+    return (section ? section + " · " : "") + (fieldName ? fieldName + " — " : "") + message;
+  }
+
+  AE.schema = {
+    text: text,
+    clip: clip,
+    contentLength: contentLength,
+    toInt: toInt,
+    josa: josa,
+    describeError: describeError,
+    validateStudent: validateStudent,
+    validateInitial: validateInitial,
+    validateDiscussion: validateDiscussion,
+    validateFinal: validateFinal,
+    validateAll: validateAll,
+    buildSubmission: buildSubmission,
+    localIsoString: localIsoString,
+    dedupeKey: dedupeKey,
+    normalize: normalize,
+    parseStudentId: parseStudentId,
+    composeStudentId: composeStudentId,
+    describeStudentId: describeStudentId,
+    seatOrder: seatOrder,
+    seatLabel: seatLabel,
+    studentLabel: studentLabel,
+    summarize: summarize,
+    choiceCounts: choiceCounts,
+    guardFormula: guardFormula,
+    csvCell: csvCell,
+    csvColumns: csvColumns,
+    cellValue: cellValue,
+    toCsv: toCsv,
+    csvFileName: csvFileName
+  };
+
+  if (typeof module !== "undefined" && module.exports) {
+    module.exports = AE.schema;
+  }
+})();
+    </script>
+    <!-- 교사 핵심 정리 — 이 파일은 교사용만 읽는다 (학생용 index.html 에는 없다) -->
+    <script data-from="shared/teacher-notes.js">
+/**
+ * 교사 핵심 정리 (명세 5장의 「교사 핵심 정리」)
+ *
+ * ★ 이 파일은 «교사용 화면만» 읽는다. teacher.html 에서만 불러온다.
+ *
+ * 왜 topics.js 에 같이 두지 않았는가
+ *   학생 화면에는 모범 답안을 보이지 않아야 한다(명세 2장 2번).
+ *   같은 파일에 담아 두면 화면에 그리지 않더라도 «학생용 결과물 안에 글자가 남는다».
+ *   개발자 도구를 열면 그대로 보인다. 그래서 파일을 아예 나누고,
+ *   build.mjs 가 학생용 결과물에 이 내용이 섞였는지 자동으로 검사한다.
+ */
+(function () {
+  "use strict";
+
+  var TEACHER_NOTES = {
+    "control-1":
+      "프로그램이 실행된다는 것과 정확하고 안전하다는 것은 다르다. AI가 만든 코드는 사람이 현실의 조건과 결과를 확인해야 한다.",
+    "control-2":
+      "AI에게 물어보는 것과 AI의 답을 그대로 믿는 것은 다른 일이다. 수정된 답도 다시 검토해야 한다.",
+    "control-3":
+      "AI의 도움을 받았더라도 코드를 이해하고 검증하며 활용 과정을 밝히는 책임은 사람에게 있다.",
+    "class-1":
+      "AI는 코드를 생성할 수 있지만 무엇을 객체로 만들고 어떤 속성과 기능을 넣을지는 문제를 이해한 사람이 판단해야 한다.",
+    "class-2":
+      "중요한 것은 단순한 수정 줄 수가 아니라 결과물을 이해하고 목적에 맞게 판단·수정했는지, AI 활용 과정을 정직하게 밝혔는지이다.",
+    "class-3":
+      "AI 활용 기록은 책임을 피하기 위한 기록이 아니라, 팀이 어떤 제안을 검토하고 무엇을 직접 결정했는지를 보여 주는 개발 과정의 기록이다."
+  };
+
+  function noteOf(topicId) {
+    return Object.prototype.hasOwnProperty.call(TEACHER_NOTES, topicId) ? TEACHER_NOTES[topicId] : "";
+  }
+
+  var root = typeof window !== "undefined" ? window : globalThis;
+  var AE = root.AE || (root.AE = {});
+  AE.TEACHER_NOTES = TEACHER_NOTES;
+  AE.teacherNoteOf = noteOf;
+
+  if (typeof module !== "undefined" && module.exports) {
+    module.exports = { TEACHER_NOTES: TEACHER_NOTES, noteOf: noteOf };
+  }
+})();
+    </script>
+
+    <!-- 교사용 화면 -->
+    <script data-from="teacher/t00-core.js">
+/**
+ * 교사용 코어 — 이름 공간과 화면 부품
+ *
+ * 교사용은 학생용 파일을 하나도 읽지 않는다. 공통 부품(shared/)만 함께 쓴다.
+ * 그래서 학생용 빌드에 교사용 코드가 섞일 일도, 그 반대도 없다(명세 8장).
+ *
+ * ★ 학생이 쓴 글은 언제나 textContent 로만 넣는다.
+ *   innerHTML 을 쓰지 않으므로 <script> 를 적어 낸 답변도 «글자» 로만 보인다(명세 6.5).
+ */
+(function () {
+  "use strict";
+
+  var root = typeof window !== "undefined" ? window : globalThis;
+  var AE = root.AE || (root.AE = {});
+  var T = AE.teacher || (AE.teacher = {});
+
+  function $(sel, ctx) {
+    return (ctx || document).querySelector(sel);
+  }
+
+  function $$(sel, ctx) {
+    return Array.prototype.slice.call((ctx || document).querySelectorAll(sel));
+  }
+
+  function el(tag, opts, children) {
+    var node = document.createElement(tag);
+    var o = opts || {};
+    if (o.class) node.className = o.class;
+    if (o.id) node.id = o.id;
+    if (o.text !== undefined && o.text !== null) node.textContent = String(o.text);
+    if (o.attrs) {
+      Object.keys(o.attrs).forEach(function (k) {
+        var v = o.attrs[k];
+        if (v === false || v === null || v === undefined) return;
+        node.setAttribute(k, v === true ? "" : String(v));
+      });
+    }
+    if (o.on) {
+      Object.keys(o.on).forEach(function (evt) {
+        node.addEventListener(evt, o.on[evt]);
+      });
+    }
+    (children || []).forEach(function (c) {
+      if (c === null || c === undefined || c === false) return;
+      node.appendChild(typeof c === "string" ? document.createTextNode(c) : c);
+    });
+    return node;
+  }
+
+  function clear(node) {
+    while (node && node.firstChild) node.removeChild(node.firstChild);
+    return node;
+  }
+
+  /** ISO 시각 → 「2026-08-17 10:20」 */
+  function fmtTime(iso, withSeconds) {
+    if (!iso) return "";
+    var d = new Date(iso);
+    if (isNaN(d.getTime())) return String(iso);
+    function two(n) {
+      return (n < 10 ? "0" : "") + n;
+    }
+    var base =
+      d.getFullYear() +
+      "-" +
+      two(d.getMonth() + 1) +
+      "-" +
+      two(d.getDate()) +
+      " " +
+      two(d.getHours()) +
+      ":" +
+      two(d.getMinutes());
+    return withSeconds ? base + ":" + two(d.getSeconds()) : base;
+  }
+
+  /** 표 안에서 긴 글을 짧게 (전체 내용은 상세 보기에서 본다) */
+  function shorten(text, max) {
+    var s = String(text || "");
+    var limit = max || 18;
+    return s.length > limit ? s.slice(0, limit) + "…" : s;
+  }
+
+  function toast(message) {
+    var region = $("#toast-region");
+    if (!region) return;
+    var box = el("div", { class: "toast", text: message });
+    region.appendChild(box);
+    setTimeout(function () {
+      if (box.parentNode) box.parentNode.removeChild(box);
+    }, 4000);
+  }
+
+  function announce(message) {
+    var live = $("#sr-live");
+    if (live) live.textContent = message;
+  }
+
+  /** 접었다 펼 수 있는 긴 글 (명세 9.2) */
+  function longText(text) {
+    var value = String(text || "");
+    var body = el("p", { class: "longtext__body", text: value || "(작성하지 않음)" });
+    if (value.length <= 120) return el("div", { class: "longtext" }, [body]);
+
+    body.classList.add("longtext__body--clamp");
+    var btn = el("button", {
+      class: "btn btn--tiny",
+      text: "펼치기",
+      attrs: { type: "button", "aria-expanded": "false" },
+      on: {
+        click: function () {
+          var open = body.classList.toggle("longtext__body--clamp");
+          btn.textContent = open ? "펼치기" : "접기";
+          btn.setAttribute("aria-expanded", open ? "false" : "true");
+        }
+      }
+    });
+    return el("div", { class: "longtext" }, [body, btn]);
+  }
+
+  T.core = {
+    $: $,
+    $$: $$,
+    el: el,
+    clear: clear,
+    fmtTime: fmtTime,
+    shorten: shorten,
+    toast: toast,
+    announce: announce,
+    longText: longText
+  };
+})();
+    </script>
+    <script data-from="teacher/t10-api.js">
+/**
+ * 교사용 자료 읽기 (명세 6.1 · 7.5)
+ *
+ * 보안에서 지킨 것
+ *   · 화면 코드 안에 «교사 비밀키» 를 적어 두지 않는다. 선생님이 그때그때 입력한다.
+ *   · 입력한 키는 주소창(URL)에 넣지 않는다. POST 본문으로만 보낸다.
+ *     주소에 넣으면 브라우저 기록·서버 로그·어깨너머로 남기 때문이다(명세 6.1).
+ *   · 키는 sessionStorage 에만 둔다. 브라우저 탭을 닫으면 사라진다.
+ *
+ * 명세 7.5 의 GET ?action=list 형태도 서버가 지원하지만, 그 길은 기본으로 잠겨 있다.
+ * 자세한 내용은 apps-script/README.md 를 볼 것.
+ */
+(function () {
+  "use strict";
+
+  var root = typeof window !== "undefined" ? window : globalThis;
+  var AE = root.AE || (root.AE = {});
+  var T = AE.teacher || (AE.teacher = {});
+
+  var KEY_STORE = "ai-ethics-teacher-key";
+  var URL_STORE = "ai-ethics-teacher-url";
+  var MEMO_STORE = "ai-ethics-teacher-memo";
+  var TIMEOUT_MS = 20000;
+
+  /* ------------------------------------------------------------------ */
+  /* 조회 주소 (학생에게 알려 준 것과 같은 /exec 주소)                       */
+  /* ------------------------------------------------------------------ */
+
+  function getUrl() {
+    var fixed = AE.config.fixedUrl();
+    if (fixed) return fixed;
+    try {
+      return (root.localStorage && root.localStorage.getItem(URL_STORE)) || "";
+    } catch (e) {
+      return "";
+    }
+  }
+
+  function setUrl(value) {
+    try {
+      if (!root.localStorage) return;
+      var clean = String(value || "").trim();
+      if (clean) root.localStorage.setItem(URL_STORE, clean);
+      else root.localStorage.removeItem(URL_STORE);
+    } catch (e) {
+      /* 저장하지 못해도 이번 화면에서는 계속 쓸 수 있다 */
+    }
+  }
+
+  /** 주소로 불러올 수 있는 상태인가 */
+  function canFetch() {
+    return !AE.config.isDemo() && !!getUrl();
+  }
+
+  function getKey() {
+    try {
+      return root.sessionStorage ? root.sessionStorage.getItem(KEY_STORE) || "" : "";
+    } catch (e) {
+      return "";
+    }
+  }
+
+  function setKey(value) {
+    try {
+      if (!root.sessionStorage) return;
+      if (value) root.sessionStorage.setItem(KEY_STORE, value);
+      else root.sessionStorage.removeItem(KEY_STORE);
+    } catch (e) {
+      /* 저장하지 못해도 이번 화면에서는 계속 쓸 수 있다 */
+    }
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* 데모 자료                                                            */
+  /* ------------------------------------------------------------------ */
+
+  function readDemo() {
+    try {
+      var raw = root.localStorage ? root.localStorage.getItem(AE.DEMO_STORE_KEY) : null;
+      var list = raw ? JSON.parse(raw) : [];
+      return Array.isArray(list) ? list : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function writeDemo(list) {
+    try {
+      if (root.localStorage) root.localStorage.setItem(AE.DEMO_STORE_KEY, JSON.stringify(list));
+    } catch (e) {
+      /* 무시 */
+    }
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* 통신                                                                */
+  /* ------------------------------------------------------------------ */
+
+  function post(payload) {
+    if (typeof root.fetch !== "function") {
+      return Promise.reject(new Error("이 브라우저에서는 조회 기능을 쓸 수 없습니다."));
+    }
+    var options = {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(payload),
+      redirect: "follow"
+    };
+    var controller = null;
+    var timer = null;
+    if (typeof root.AbortController === "function") {
+      controller = new root.AbortController();
+      options.signal = controller.signal;
+      timer = setTimeout(function () {
+        controller.abort();
+      }, TIMEOUT_MS);
+    }
+    return root
+      .fetch(getUrl(), options)
+      .then(function (res) {
+        if (timer) clearTimeout(timer);
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        return res.text();
+      })
+      .then(function (body) {
+        try {
+          return JSON.parse(body);
+        } catch (e) {
+          throw new Error("서버 응답을 읽지 못했습니다. 배포 설정(액세스 권한)을 확인해 주세요.");
+        }
+      })
+      .catch(function (err) {
+        if (timer) clearTimeout(timer);
+        throw err;
+      });
+  }
+
+  /**
+   * 제출 목록을 가져온다.
+   * 돌려주는 것 : { ok, generatedAt, submissions[], summary, demo }
+   */
+  function list(filters) {
+    var f = filters || {};
+
+    if (AE.config.isDemo()) {
+      var rows = readDemo()
+        .filter(function (r) {
+          if (f.topicId && r.topicId !== f.topicId) return false;
+          return true;
+        })
+        .map(AE.schema.normalize);
+      return Promise.resolve({
+        ok: true,
+        demo: true,
+        generatedAt: new Date().toISOString(),
+        submissions: rows,
+        summary: AE.schema.summarize(rows)
+      });
+    }
+
+    if (!getUrl()) {
+      return Promise.reject(
+        new Error("제출 주소가 없습니다. 학생에게 알려 준 /exec 주소를 넣거나, 파일을 끌어다 놓아 주세요.")
+      );
+    }
+
+    return post({
+      action: "list",
+      teacherKey: getKey(),
+      topicId: f.topicId || ""
+    }).then(function (data) {
+      if (!data || data.ok !== true) {
+        var err = new Error((data && data.message) || "조회하지 못했습니다.");
+        err.code = data && data.code;
+        throw err;
+      }
+      var rows = (data.submissions || []).map(AE.schema.normalize);
+      return {
+        ok: true,
+        demo: false,
+        generatedAt: data.generatedAt || new Date().toISOString(),
+        submissions: rows,
+        summary: data.summary || AE.schema.summarize(rows)
+      };
+    });
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* JSON 파일에서 읽기 (선생님이 드라이브에서 내려받은 파일)                */
+  /* ------------------------------------------------------------------ */
+
+  /**
+   * 아무 모양의 JSON 에서 «제출 목록» 을 뽑아낸다.
+   * 파일 하나에 제출 하나가 든 것도, 배열도, { submissions: [...] } 도 모두 받는다.
+   */
+  function extractRows(raw) {
+    if (!raw) return [];
+    if (Array.isArray(raw)) {
+      return raw.reduce(function (all, item) {
+        return all.concat(extractRows(item));
+      }, []);
+    }
+    if (typeof raw !== "object") return [];
+    if (Array.isArray(raw.submissions)) return extractRows(raw.submissions);
+    if (Array.isArray(raw.rows)) return extractRows(raw.rows);
+    if (Array.isArray(raw.items)) return extractRows(raw.items);
+    /* 제출 한 건으로 보이는가 */
+    if (raw.topicId || raw.submissionId) return [raw];
+    return [];
+  }
+
+  /** 이 차시 것만 남기고, 같은 학생·같은 주제는 «최신» 것만 둔다 */
+  function dedupeRows(rows) {
+    var byKey = {};
+    (rows || []).forEach(function (raw) {
+      if (!raw) return;
+      if (raw.lessonId && raw.lessonId !== AE.LESSON_ID) return;
+      var sub = AE.schema.normalize(raw);
+      if (!sub.topicId) return;
+      var key = AE.schema.dedupeKey(sub);
+      var prev = byKey[key];
+      if (!prev) {
+        byKey[key] = sub;
+        return;
+      }
+      var when = sub.serverUpdatedAt || sub.serverSubmittedAt || "";
+      var prevWhen = prev.serverUpdatedAt || prev.serverSubmittedAt || "";
+      if (String(when) >= String(prevWhen)) byKey[key] = sub;
+    });
+    return Object.keys(byKey).map(function (k) {
+      return byKey[k];
+    });
+  }
+
+  /** 파일 하나를 글자로 읽는다 */
+  function readFileText(file) {
+    return new Promise(function (resolve) {
+      var reader = new FileReader();
+      reader.onload = function () {
+        resolve({ name: file.name, text: String(reader.result || "") });
+      };
+      reader.onerror = function () {
+        resolve({ name: file.name, text: "", failed: true });
+      };
+      reader.readAsText(file, "UTF-8");
+    });
+  }
+
+  /**
+   * 고른 파일들(또는 끌어다 놓은 파일들)에서 제출을 읽는다.
+   * 돌려주는 것 : { ok, submissions[], readCount, skipped[] }
+   */
+  function readFiles(fileList) {
+    var files = Array.prototype.slice.call(fileList || []);
+    if (!files.length) {
+      return Promise.resolve({ ok: false, message: "고른 파일이 없습니다.", submissions: [], skipped: [] });
+    }
+    return Promise.all(files.map(readFileText)).then(function (results) {
+      var rows = [];
+      var skipped = [];
+      results.forEach(function (r) {
+        if (r.failed) {
+          skipped.push(r.name + " (읽지 못함)");
+          return;
+        }
+        var parsed;
+        try {
+          parsed = JSON.parse(r.text);
+        } catch (e) {
+          skipped.push(r.name + " (JSON 형식이 아님)");
+          return;
+        }
+        var found = extractRows(parsed);
+        if (!found.length) {
+          skipped.push(r.name + " (제출 자료가 아님)");
+          return;
+        }
+        rows = rows.concat(found);
+      });
+
+      var submissions = dedupeRows(rows);
+      return {
+        ok: submissions.length > 0,
+        submissions: submissions,
+        readCount: files.length,
+        skipped: skipped,
+        generatedAt: new Date().toISOString(),
+        message: submissions.length === 0 ? "읽을 수 있는 제출이 없습니다." : ""
+      };
+    });
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* 교사 메모 (명세 6.5 — 선택 기능)                                      */
+  /* ------------------------------------------------------------------ */
+
+  /**
+   * 파일을 끌어다 놓고 보는 중이라면 서버에 쓸 길이 없다.
+   * 그럴 때는 이 브라우저에만 담아 두고 화면에 그렇게 적어 준다.
+   */
+  function readLocalMemos() {
+    try {
+      var raw = root.localStorage ? root.localStorage.getItem(MEMO_STORE) : null;
+      var v = raw ? JSON.parse(raw) : {};
+      return v && typeof v === "object" ? v : {};
+    } catch (e) {
+      return {};
+    }
+  }
+
+  function writeLocalMemo(submissionId, memo) {
+    try {
+      if (!root.localStorage) return false;
+      var all = readLocalMemos();
+      if (memo) all[submissionId] = memo;
+      else delete all[submissionId];
+      root.localStorage.setItem(MEMO_STORE, JSON.stringify(all));
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  /** 이 브라우저에 담아 둔 메모를 불러온 제출에 얹는다 */
+  function applyLocalMemos(rows) {
+    var all = readLocalMemos();
+    (rows || []).forEach(function (sub) {
+      if (!sub.teacherMemo && all[sub.submissionId]) sub.teacherMemo = all[sub.submissionId];
+    });
+    return rows;
+  }
+
+  function saveMemo(submissionId, memo) {
+    if (AE.config.isDemo()) {
+      var rows = readDemo();
+      for (var i = 0; i < rows.length; i += 1) {
+        if (rows[i].submissionId === submissionId) {
+          rows[i].teacherMemo = memo;
+          writeDemo(rows);
+          return Promise.resolve({ ok: true, demo: true });
+        }
+      }
+      return Promise.resolve({ ok: false, message: "해당 제출을 찾지 못했습니다." });
+    }
+
+    /* 주소가 없으면(파일을 끌어다 놓고 보는 중) 이 브라우저에만 담는다 */
+    if (!canFetch()) {
+      var saved = writeLocalMemo(submissionId, memo);
+      return Promise.resolve({
+        ok: saved,
+        local: true,
+        message: saved ? "" : "이 브라우저에 저장하지 못했습니다."
+      });
+    }
+
+    return post({
+      action: "memo",
+      teacherKey: getKey(),
+      submissionId: submissionId,
+      teacherMemo: memo
+    });
+  }
+
+  /** 서버가 살아 있는지, 키가 맞는지 확인 */
+  function ping() {
+    if (AE.config.isDemo()) return Promise.resolve({ ok: true, demo: true });
+    return post({ action: "ping", teacherKey: getKey() });
+  }
+
+  T.api = {
+    getKey: getKey,
+    setKey: setKey,
+    getUrl: getUrl,
+    setUrl: setUrl,
+    canFetch: canFetch,
+    list: list,
+    readFiles: readFiles,
+    extractRows: extractRows,
+    dedupeRows: dedupeRows,
+    applyLocalMemos: applyLocalMemos,
+    saveMemo: saveMemo,
+    ping: ping,
+    readDemo: readDemo
+  };
+})();
+    </script>
+    <script data-from="teacher/t20-filter.js">
+/**
+ * 거르기 · 정렬 · 쪽 나누기 (명세 6.2 · 6.4)
+ *
+ * 화면을 그리지 않는 «계산만 하는» 파일이라 테스트로 바로 확인할 수 있다.
+ * 정렬과 쪽 이동을 해도 거르기 조건은 그대로 남는다(명세 12.2).
+ */
+(function () {
+  "use strict";
+
+  var root = typeof window !== "undefined" ? window : globalThis;
+  var AE = root.AE || (root.AE = {});
+  var T = AE.teacher || (AE.teacher = {});
+
+  var PAGE_SIZES = [20, 50, 100];
+
+  function emptyFilters() {
+    return {
+      unitId: "",
+      topicId: "",
+      grade: "",
+      classNumber: "",
+      changeType: "",
+      query: "",
+      sortKey: "seat",
+      sortDir: "asc",
+      page: 1,
+      pageSize: 20
+    };
+  }
+
+  function norm(v) {
+    return String(v === null || v === undefined ? "" : v).trim().toLowerCase();
+  }
+
+  /** 이름 또는 학번으로 찾기 — 「10312」 일부만 넣어도 맞는다 */
+  function matchQuery(sub, query) {
+    var q = norm(query);
+    if (!q) return true;
+    var s = sub.student || {};
+    var hay = [norm(s.name), norm(s.studentId)].join(" ");
+    return hay.indexOf(q) !== -1;
+  }
+
+  function applyFilters(rows, f) {
+    var filters = f || emptyFilters();
+    return (rows || []).filter(function (sub) {
+      var s = sub.student || {};
+      if (filters.topicId && sub.topicId !== filters.topicId) return false;
+      if (filters.unitId) {
+        var topic = AE.topics.byId(sub.topicId);
+        if (!topic || topic.unitId !== filters.unitId) return false;
+      }
+      if (filters.grade && String(s.grade) !== String(filters.grade)) return false;
+      if (filters.classNumber && String(s.classNumber) !== String(filters.classNumber)) return false;
+      if (filters.changeType) {
+        var ct = sub.finalAnswer && sub.finalAnswer.changeType;
+        if (ct !== filters.changeType) return false;
+      }
+      if (!matchQuery(sub, filters.query)) return false;
+      return true;
+    });
+  }
+
+  /** 열 머리글을 눌렀을 때 쓰는 정렬 (명세 6.4) */
+  function sortRows(rows, key, dir) {
+    var sign = dir === "desc" ? -1 : 1;
+    var copy = (rows || []).slice();
+
+    function value(sub) {
+      switch (key) {
+        case "seat":
+          /* 학번이 곧 자리 순서다 (10312 → 1학년 3반 12번) */
+          return AE.schema.seatOrder(sub);
+        case "name":
+          return (sub.student && sub.student.name) || "";
+        case "topic":
+          return sub.topicId || "";
+        case "initial":
+          return (sub.initialAnswer && sub.initialAnswer.choice) || "";
+        case "final":
+          return (sub.finalAnswer && sub.finalAnswer.choice) || "";
+        case "change":
+          return (sub.finalAnswer && sub.finalAnswer.changeType) || "";
+        case "status":
+          return sub.status || "";
+        case "time":
+        default:
+          return sub.serverUpdatedAt || sub.serverSubmittedAt || "";
+      }
+    }
+
+    copy.sort(function (a, b) {
+      var va = value(a);
+      var vb = value(b);
+      if (typeof va === "number" && typeof vb === "number") return (va - vb) * sign;
+      va = String(va);
+      vb = String(vb);
+      if (va === vb) return AE.schema.seatOrder(a) - AE.schema.seatOrder(b);
+      return va.localeCompare(vb, "ko") * sign;
+    });
+    return copy;
+  }
+
+  function paginate(rows, page, size) {
+    var list = rows || [];
+    var pageSize = size || 20;
+    var totalPages = Math.max(1, Math.ceil(list.length / pageSize));
+    var current = Math.min(Math.max(1, page || 1), totalPages);
+    var start = (current - 1) * pageSize;
+    return {
+      page: current,
+      totalPages: totalPages,
+      total: list.length,
+      rows: list.slice(start, start + pageSize),
+      from: list.length === 0 ? 0 : start + 1,
+      to: Math.min(start + pageSize, list.length)
+    };
+  }
+
+  /** 거르기 상자에 넣을 «실제로 존재하는 값» 목록 */
+  function optionsFrom(rows) {
+    var grades = {};
+    var classNumbers = {};
+    (rows || []).forEach(function (sub) {
+      var s = sub.student || {};
+      if (!isNaN(s.grade)) grades[s.grade] = true;
+      if (!isNaN(s.classNumber)) classNumbers[s.classNumber] = true;
+    });
+    function nums(obj) {
+      return Object.keys(obj)
+        .map(Number)
+        .sort(function (a, b) {
+          return a - b;
+        });
+    }
+    return {
+      grades: nums(grades),
+      classNumbers: nums(classNumbers)
+    };
+  }
+
+  T.filter = {
+    PAGE_SIZES: PAGE_SIZES,
+    emptyFilters: emptyFilters,
+    applyFilters: applyFilters,
+    sortRows: sortRows,
+    paginate: paginate,
+    optionsFrom: optionsFrom,
+    matchQuery: matchQuery
+  };
+
+  if (typeof module !== "undefined" && module.exports) module.exports = T.filter;
+})();
+    </script>
+    <script data-from="teacher/t30-summary.js">
+/**
+ * 요약 카드 (명세 6.3)
+ *
+ * 세는 것만 한다. 서술형 길이나 어떤 선택지를 골랐는지를 «윤리 점수» 로 바꾸지 않는다.
+ */
+(function () {
+  "use strict";
+
+  var root = typeof window !== "undefined" ? window : globalThis;
+  var AE = root.AE || (root.AE = {});
+  var T = AE.teacher || (AE.teacher = {});
+  var c = T.core;
+  var el = c.el;
+
+  function statCard(label, value, note) {
+    return el("div", { class: "stat" }, [
+      el("p", { class: "stat__label", text: label }),
+      el("p", { class: "stat__value", text: String(value) }),
+      note ? el("p", { class: "stat__note", text: note }) : null
+    ]);
+  }
+
+  /** 이름 옆에 개수를 적은 작은 목록 */
+  function countList(pairs, emptyText) {
+    if (!pairs.length) return el("p", { class: "stat__note", text: emptyText || "없음" });
+    return el(
+      "ul",
+      { class: "countlist" },
+      pairs.map(function (p) {
+        return el("li", { class: "countlist__item" }, [
+          el("span", { class: "countlist__name", text: p.label }),
+          el("span", { class: "countlist__num", text: p.count + "건" })
+        ]);
+      })
+    );
+  }
+
+  /**
+   * container 에 요약을 그린다.
+   * rows 는 «지금 거르기가 끝난» 목록이다.
+   */
+  function render(container, rows, filters) {
+    c.clear(container);
+    var summary = AE.schema.summarize(rows);
+
+    var byTopic = Object.keys(summary.byTopic)
+      .sort()
+      .map(function (id) {
+        return { label: AE.topics.titleOf(id), count: summary.byTopic[id] };
+      });
+
+    /* 지금 어떤 조건으로 걸렀는지 한 줄로 (수업 코드는 쓰지 않는다) */
+    var picked = [];
+    if (filters.unitId) {
+      AE.UNITS.forEach(function (u) {
+        if (u.id === filters.unitId) picked.push(u.title);
+      });
+    }
+    if (filters.topicId) picked.push(filters.topicId);
+    if (filters.grade) picked.push(filters.grade + "학년");
+    if (filters.classNumber) picked.push(filters.classNumber + "반");
+    if (filters.changeType) picked.push(filters.changeType);
+    if (filters.query) picked.push("찾기 “" + filters.query + "”");
+
+    container.appendChild(
+      el("div", { class: "stat-grid" }, [
+        statCard("전체 제출 수", summary.totalSubmissions, "지금 거르기 결과 기준"),
+        statCard("고유 학생 수", summary.uniqueStudents, "학번 기준"),
+        statCard("지금 거르기 조건", picked.length, picked.length ? picked.join(" · ") : "조건 없음 (전체)"),
+        el("div", { class: "stat stat--wide" }, [
+          el("p", { class: "stat__label", text: "주제별 제출 수" }),
+          countList(byTopic, "제출이 없습니다")
+        ])
+        /* 「토론 후 생각 변화」 요약 카드는 두지 않는다(2026-08-17).
+           같은 내용을 «주제별 분석» 의 막대그래프가 주제마다 더 자세히 보여 준다. */
+      ])
+    );
+  }
+
+  T.summary = { render: render };
+})();
+    </script>
+    <script data-from="teacher/t40-table.js">
+/**
+ * 제출 목록 표 (명세 6.4)
+ *
+ *   · 열 머리글을 눌러 정렬한다 (aria-sort 로 스크린 리더에도 알린다)
+ *   · 한 쪽에 20 · 50 · 100 개 중에서 고른다
+ *   · 좁은 화면에서는 표가 «카드» 로 바뀐다 (CSS 가 처리하도록 각 칸에 이름표를 붙여 둔다)
+ */
+(function () {
+  "use strict";
+
+  var root = typeof window !== "undefined" ? window : globalThis;
+  var AE = root.AE || (root.AE = {});
+  var T = AE.teacher || (AE.teacher = {});
+  var c = T.core;
+  var el = c.el;
+
+  /**
+   * 표에 「학번」 열은 두지 않는다(2026-08-17).
+   * 「학년·반·번호」가 같은 내용을 더 읽기 쉽게 보여 주기 때문이다.
+   * 학번 자체는 상세 보기와 CSV 에서 볼 수 있다.
+   */
+  var COLUMNS = [
+    { key: "time", label: "제출 시각", sortable: true },
+    { key: "name", label: "이름", sortable: true },
+    { key: "seat", label: "학년·반·번호", sortable: true },
+    { key: "topic", label: "주제", sortable: true },
+    { key: "initial", label: "최초 판단", sortable: true },
+    { key: "final", label: "최종 판단", sortable: true },
+    { key: "change", label: "생각 변화", sortable: true },
+    { key: "status", label: "제출 상태", sortable: true },
+    { key: "detail", label: "상세 보기", sortable: false }
+  ];
+
+  function cellText(sub, key) {
+    switch (key) {
+      case "time":
+        return c.fmtTime(sub.serverUpdatedAt || sub.serverSubmittedAt);
+      case "seat":
+        return AE.schema.seatLabel(sub);
+      case "name":
+        return sub.student.name || "";
+      case "topic":
+        return AE.topics.titleOf(sub.topicId);
+      case "initial":
+        return sub.initialAnswer.choice || "";
+      case "final":
+        return sub.finalAnswer.choice || "";
+      case "change":
+        return sub.finalAnswer.changeType || "";
+      case "status":
+        return sub.status || "완료";
+      default:
+        return "";
+    }
+  }
+
+  /**
+   * options : { rows, page, filters, onSort(key), onDetail(sub), onPage(n) }
+   */
+  function render(container, options) {
+    var o = options;
+    c.clear(container);
+
+    var page = o.page;
+
+    /* ── 머리글 ── */
+    var headCells = COLUMNS.map(function (col) {
+      var isSorted = o.filters.sortKey === col.key;
+      var th = el("th", {
+        attrs: {
+          scope: "col",
+          "aria-sort": col.sortable ? (isSorted ? (o.filters.sortDir === "asc" ? "ascending" : "descending") : "none") : null
+        }
+      });
+      if (!col.sortable) {
+        th.textContent = col.label;
+        return th;
+      }
+      th.appendChild(
+        el("button", {
+          class: "th-sort" + (isSorted ? " th-sort--on" : ""),
+          attrs: { type: "button" },
+          text: col.label + (isSorted ? (o.filters.sortDir === "asc" ? " ▲" : " ▼") : ""),
+          on: {
+            click: function () {
+              o.onSort(col.key);
+            }
+          }
+        })
+      );
+      return th;
+    });
+
+    /* ── 본문 ── */
+    var bodyRows = page.rows.map(function (sub) {
+      var cells = COLUMNS.map(function (col) {
+        if (col.key === "detail") {
+          return el("td", { attrs: { "data-label": col.label } }, [
+            el("button", {
+              class: "btn btn--tiny",
+              text: "상세",
+              attrs: {
+                type: "button",
+                "aria-label": (sub.student.name || "학생") + " 상세 보기"
+              },
+              on: {
+                click: function () {
+                  o.onDetail(sub);
+                }
+              }
+            })
+          ]);
+        }
+        var full = cellText(sub, col.key);
+        var short = col.key === "initial" || col.key === "final" ? c.shorten(full, 14) : full;
+        var td = el("td", { attrs: { "data-label": col.label }, text: short });
+        if (short !== full) td.setAttribute("title", full);
+        return td;
+      });
+      return el("tr", {}, cells);
+    });
+
+    var table = el("table", { class: "dtable" }, [
+      el("caption", { class: "sr-only", text: "제출 목록" }),
+      el("thead", {}, [el("tr", {}, headCells)]),
+      el(
+        "tbody",
+        {},
+        bodyRows.length
+          ? bodyRows
+          : [
+              el("tr", {}, [
+                el("td", {
+                  class: "dtable__empty",
+                  attrs: { colspan: String(COLUMNS.length) },
+                  text: "조건에 맞는 제출이 없습니다."
+                })
+              ])
+            ]
+      )
+    ]);
+
+    container.appendChild(el("div", { class: "dtable-wrap" }, [table]));
+
+    /* ── 쪽 이동 ──
+       「한 쪽에 ○개씩」 고르는 칸은 여기 두지 않는다.
+       위쪽 [2 제출 목록] 단추 옆에 나란히 있다(t90-main.js 의 pageSizeControl). */
+    container.appendChild(
+      el("div", { class: "pager" }, [
+        el("p", {
+          class: "pager__info",
+          text: page.total === 0 ? "0건" : page.from + "–" + page.to + " / 전체 " + page.total + "건"
+        }),
+        el("div", { class: "pager__right" }, [
+          el("button", {
+            class: "btn btn--tiny",
+            text: "◀ 이전",
+            attrs: { type: "button", disabled: page.page <= 1 },
+            on: {
+              click: function () {
+                o.onPage(page.page - 1);
+              }
+            }
+          }),
+          el("span", { class: "pager__num", text: page.page + " / " + page.totalPages }),
+          el("button", {
+            class: "btn btn--tiny",
+            text: "다음 ▶",
+            attrs: { type: "button", disabled: page.page >= page.totalPages },
+            on: {
+              click: function () {
+                o.onPage(page.page + 1);
+              }
+            }
+          })
+        ])
+      ])
+    );
+  }
+
+  T.table = { render: render, COLUMNS: COLUMNS };
+})();
+    </script>
+    <script data-from="teacher/t50-detail.js">
+/**
+ * 학생별 상세 보기 (명세 6.5)
+ *
+ * 모달로 띄운다.
+ *   · 학생이 쓴 글은 모두 textContent — 스크립트로 실행되지 않는다
+ *   · 긴 글은 접었다 펼 수 있다
+ *   · Esc 로 닫고, 닫으면 원래 있던 버튼으로 초점이 돌아간다
+ *   · [인쇄] 는 이 모달만 인쇄한다(styles/print.css)
+ */
+(function () {
+  "use strict";
+
+  var root = typeof window !== "undefined" ? window : globalThis;
+  var AE = root.AE || (root.AE = {});
+  var T = AE.teacher || (AE.teacher = {});
+  var c = T.core;
+  var el = c.el;
+
+  var openEl = null;
+  var lastFocus = null;
+
+  function row(label, value) {
+    return el("div", { class: "drow" }, [
+      el("p", { class: "drow__label", text: label }),
+      c.longText(value)
+    ]);
+  }
+
+  function close() {
+    if (!openEl) return;
+    document.body.classList.remove("modal-open");
+    if (openEl.parentNode) openEl.parentNode.removeChild(openEl);
+    openEl = null;
+    document.removeEventListener("keydown", onKey);
+    if (lastFocus && typeof lastFocus.focus === "function") lastFocus.focus();
+  }
+
+  function onKey(e) {
+    if (e.key === "Escape") {
+      e.preventDefault();
+      close();
+      return;
+    }
+    /* 탭이 모달 밖으로 나가지 않게 한다 */
+    if (e.key === "Tab" && openEl) {
+      var focusables = openEl.querySelectorAll(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      );
+      if (!focusables.length) return;
+      var first = focusables[0];
+      var last = focusables[focusables.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    }
+  }
+
+  function open(sub, options) {
+    close();
+    lastFocus = document.activeElement;
+    var opt = options || {};
+    var topic = AE.topics.byId(sub.topicId);
+
+    var titleId = "detail-title";
+    var blocks = [];
+
+    /* 학생 정보 */
+    blocks.push(
+      el("div", { class: "dgroup" }, [
+        el("h3", { class: "dgroup__title", text: "학생 정보" }),
+        row("학번", sub.student.studentId || ""),
+        row("이름", sub.student.name || ""),
+        row("학년·반·번호", AE.schema.seatLabel(sub)),
+        row("최초 제출 시각", c.fmtTime(sub.serverSubmittedAt, true)),
+        row("최종 수정 시각", c.fmtTime(sub.serverUpdatedAt, true)),
+        row("제출 상태", sub.status || "완료"),
+        row("정직성 확인", sub.honestyConfirmed ? "확인함" : "확인하지 않음")
+      ])
+    );
+
+    /* 활동 주제 */
+    blocks.push(
+      el("div", { class: "dgroup" }, [
+        el("h3", { class: "dgroup__title", text: "활동 주제" }),
+        row("주제", sub.topicId + " · " + AE.topics.titleOf(sub.topicId)),
+        row("연계 개념", topic ? topic.concepts : ""),
+        row("핵심 질문", topic ? topic.coreQuestion : "")
+      ])
+    );
+
+    /* 최초 판단 */
+    var initialRows = [
+      el("h3", { class: "dgroup__title", text: "최초 판단" }),
+      row("선택", sub.initialAnswer.choice)
+    ];
+    if (!topic || topic.initial.reason) initialRows.push(row("이유", sub.initialAnswer.reason));
+    if (topic) {
+      AE.topics.fieldsOf(topic, "initial").forEach(function (f) {
+        initialRows.push(row(AE.topics.labelOf(f), sub.initialAnswer.taskFields[f.key]));
+      });
+    }
+    blocks.push(el("div", { class: "dgroup" }, initialRows));
+
+    /* 토론 */
+    blocks.push(
+      el("div", { class: "dgroup" }, [
+        el("h3", { class: "dgroup__title", text: "토론" }),
+        row("새롭게 알게 된 점", sub.discussion.newInsight),
+        row("토론 완료 표시", sub.discussion.completed ? "예" : "아니오")
+      ])
+    );
+
+    /* 최종 판단 */
+    var finalRows = [
+      el("h3", { class: "dgroup__title", text: "최종 판단" }),
+      row("선택", sub.finalAnswer.choice),
+      row("이유", sub.finalAnswer.reason),
+      row("생각 변화", sub.finalAnswer.changeType)
+    ];
+    if (topic) {
+      /* class-3 의 «AI 활용 기록» 5개 항목도 여기에서 모두 보인다 (명세 6.5) */
+      AE.topics.fieldsOf(topic, "final").forEach(function (f) {
+        finalRows.push(row(AE.topics.labelOf(f), sub.finalAnswer.taskFields[f.key]));
+      });
+      if (topic.final.sentence) {
+        finalRows.push(row("완성 문장", AE.topics.sentencePreview(topic, sub.finalAnswer.taskFields)));
+      }
+    }
+    blocks.push(el("div", { class: "dgroup" }, finalRows));
+
+    blocks.push(
+      el("div", { class: "dgroup" }, [
+        el("h3", { class: "dgroup__title", text: "나의 AI 활용 원칙" }),
+        c.longText(sub.personalPrinciple)
+      ])
+    );
+
+    /* 교사 메모 */
+    var memoInput = el("textarea", {
+      class: "input input--area",
+      id: "detail-memo",
+      attrs: { rows: 3, placeholder: "이 학생에 대한 메모 (학생에게는 보이지 않습니다)" }
+    });
+    memoInput.value = sub.teacherMemo || "";
+    var memoStatus = el("p", { class: "dmemo__status", attrs: { "aria-live": "polite" } });
+    var memoBtn = el("button", {
+      class: "btn btn--tiny",
+      text: "메모 저장",
+      attrs: { type: "button" },
+      on: {
+        click: function () {
+          memoBtn.disabled = true;
+          memoStatus.textContent = "저장 중…";
+          T.api.saveMemo(sub.submissionId, memoInput.value).then(
+            function (res) {
+              memoBtn.disabled = false;
+              if (res && res.ok) {
+                sub.teacherMemo = memoInput.value;
+                /* 파일을 끌어다 놓고 보는 중이면 서버에 쓸 길이 없다. 그 사실을 분명히 적는다. */
+                memoStatus.textContent = res.local
+                  ? "이 브라우저에만 저장했습니다. (다른 컴퓨터에서는 보이지 않습니다)"
+                  : "저장했습니다.";
+                if (opt.onMemoSaved) opt.onMemoSaved(sub);
+              } else {
+                memoStatus.textContent = (res && res.message) || "저장하지 못했습니다.";
+              }
+            },
+            function () {
+              memoBtn.disabled = false;
+              memoStatus.textContent = "저장하지 못했습니다. 연결을 확인해 주세요.";
+            }
+          );
+        }
+      }
+    });
+
+    blocks.push(
+      el("div", { class: "dgroup dmemo" }, [
+        el("h3", { class: "dgroup__title", text: "교사 메모" }),
+        el("label", { class: "sr-only", text: "교사 메모", attrs: { for: "detail-memo" } }),
+        memoInput,
+        el("div", { class: "btn-row" }, [memoBtn, memoStatus])
+      ])
+    );
+
+    var closeBtn = el("button", {
+      class: "btn btn--tiny",
+      text: "닫기",
+      attrs: { type: "button" },
+      on: { click: close }
+    });
+
+    var printBtn = el("button", {
+      class: "btn btn--tiny",
+      text: "인쇄",
+      attrs: { type: "button" },
+      on: {
+        click: function () {
+          root.print();
+        }
+      }
+    });
+
+    var panel = el(
+      "div",
+      {
+        class: "modal__panel",
+        attrs: { role: "dialog", "aria-modal": "true", "aria-labelledby": titleId }
+      },
+      [
+        el("div", { class: "modal__head" }, [
+          el("h2", {
+            class: "modal__title",
+            id: titleId,
+            text: AE.schema.studentLabel(sub) + " · " + AE.topics.titleOf(sub.topicId)
+          }),
+          el("div", { class: "btn-row" }, [printBtn, closeBtn])
+        ]),
+        el("div", { class: "modal__body" }, blocks)
+      ]
+    );
+
+    openEl = el("div", { class: "modal", on: { click: function (e) {
+      if (e.target === openEl) close();
+    } } }, [panel]);
+
+    document.body.appendChild(openEl);
+    document.body.classList.add("modal-open");
+    document.addEventListener("keydown", onKey);
+    closeBtn.focus();
+  }
+
+  T.detail = { open: open, close: close };
+})();
+    </script>
+    <script data-from="teacher/t60-analysis.js">
+/**
+ * 주제별 분석 (명세 6.6)
+ *
+ *   · 선택형 문항의 응답 인원과 비율을 막대로 보여 준다
+ *   · 생각 변화 분포를 보여 준다
+ *   · 서술형은 «원문 목록» 으로만 보여 준다. 요약하거나 점수를 매기지 않는다
+ *   · 「아직 제출하지 않은 학생」 은 학생 명단이 있을 때만 쓸 수 있다 → 지금은 안내만 한다
+ */
+(function () {
+  "use strict";
+
+  var root = typeof window !== "undefined" ? window : globalThis;
+  var AE = root.AE || (root.AE = {});
+  var T = AE.teacher || (AE.teacher = {});
+  var c = T.core;
+  var el = c.el;
+
+  /** 막대 하나 — 글자에 인원과 비율이 모두 들어 있어 색 없이도 읽힌다 */
+  function bar(label, count, percent, tone) {
+    var fill = el("div", { class: "bar__fill" + (tone ? " bar__fill--" + tone : "") });
+    fill.style.width = Math.max(percent, 0) + "%";
+    return el("li", { class: "bar" }, [
+      el("span", { class: "bar__label", text: label }),
+      el("span", { class: "bar__track" }, [fill]),
+      el("span", { class: "bar__num", text: count + "명 (" + percent + "%)" })
+    ]);
+  }
+
+  function barGroup(title, items, tone) {
+    return el("div", { class: "chart" }, [
+      el("h4", { class: "chart__title", text: title }),
+      el(
+        "ul",
+        { class: "bars" },
+        items.map(function (it) {
+          return bar(it.label, it.count, it.percent, tone);
+        })
+      )
+    ]);
+  }
+
+  function changeChart(rows) {
+    var counts = {};
+    AE.CHANGE_TYPES.forEach(function (ct) {
+      counts[ct] = 0;
+    });
+    var total = 0;
+    rows.forEach(function (r) {
+      var ct = r.finalAnswer && r.finalAnswer.changeType;
+      if (ct && Object.prototype.hasOwnProperty.call(counts, ct)) {
+        counts[ct] += 1;
+        total += 1;
+      }
+    });
+    var items = AE.CHANGE_TYPES.map(function (ct) {
+      return {
+        label: ct,
+        count: counts[ct],
+        percent: total > 0 ? Math.round((counts[ct] / total) * 1000) / 10 : 0
+      };
+    });
+    return barGroup("토론 후 생각 변화", items, "teal");
+  }
+
+  /** 서술형 원문 목록 — 학생 이름과 함께, 글자 그대로 */
+  function textList(title, rows, getter) {
+    var items = rows
+      .map(function (r) {
+        return { name: AE.schema.studentLabel(r), text: getter(r) };
+      })
+      .filter(function (x) {
+        return x.text;
+      });
+
+    return el("details", { class: "rawlist" }, [
+      el("summary", { class: "rawlist__summary", text: title + " (" + items.length + "건)" }),
+      items.length === 0
+        ? el("p", { class: "rawlist__empty", text: "해당하는 답변이 없습니다." })
+        : el(
+            "ul",
+            { class: "rawlist__items" },
+            items.map(function (x) {
+              return el("li", { class: "rawlist__item" }, [
+                el("p", { class: "rawlist__who", text: x.name }),
+                el("p", { class: "rawlist__text", text: x.text })
+              ]);
+            })
+          )
+    ]);
+  }
+
+  function render(container, rows, filters) {
+    c.clear(container);
+
+    if (rows.length === 0) {
+      container.appendChild(el("p", { class: "empty", text: "표시할 제출이 없습니다." }));
+      return;
+    }
+
+    /* 거른 결과 안에 있는 주제들을 각각 분석한다 */
+    var topicIds = [];
+    rows.forEach(function (r) {
+      if (topicIds.indexOf(r.topicId) === -1) topicIds.push(r.topicId);
+    });
+    topicIds.sort();
+
+    topicIds.forEach(function (topicId) {
+      var topic = AE.topics.byId(topicId);
+      var subset = rows.filter(function (r) {
+        return r.topicId === topicId;
+      });
+
+      var blocks = [
+        el("p", { class: "chart-note", text: "제출 " + subset.length + "건" })
+      ];
+
+      if (topic) {
+        blocks.push(
+          barGroup("최초 판단 — " + topic.initial.choiceLabel, AE.schema.choiceCounts(subset, topicId, "initial"))
+        );
+        blocks.push(barGroup("최종 판단", AE.schema.choiceCounts(subset, topicId, "final"), "navy"));
+      }
+      blocks.push(changeChart(subset));
+
+      if (topic) {
+        if (topic.initial.reason) {
+          blocks.push(
+            textList("최초 이유 원문", subset, function (r) {
+              return r.initialAnswer.reason;
+            })
+          );
+        }
+        blocks.push(
+          textList("토론에서 새롭게 알게 된 점 원문", subset, function (r) {
+            return r.discussion.newInsight;
+          })
+        );
+        blocks.push(
+          textList("최종 이유 원문", subset, function (r) {
+            return r.finalAnswer.reason;
+          })
+        );
+        AE.topics.fieldsOf(topic, "initial").forEach(function (f) {
+          blocks.push(
+            textList("최초 · " + AE.topics.labelOf(f), subset, function (r) {
+              return r.initialAnswer.taskFields[f.key];
+            })
+          );
+        });
+        AE.topics.fieldsOf(topic, "final").forEach(function (f) {
+          blocks.push(
+            textList("최종 · " + AE.topics.labelOf(f), subset, function (r) {
+              return r.finalAnswer.taskFields[f.key];
+            })
+          );
+        });
+        blocks.push(
+          textList("나의 AI 활용 원칙 원문", subset, function (r) {
+            return r.personalPrinciple;
+          })
+        );
+
+        /* 교사 핵심 정리 — shared/teacher-notes.js 는 교사용만 읽는다 (명세 2장 2번) */
+        blocks.push(
+          el("div", { class: "teacher-note" }, [
+            el("p", { class: "teacher-note__label", text: "교사 핵심 정리" }),
+            el("p", { class: "teacher-note__text", text: AE.teacherNoteOf(topicId) })
+          ])
+        );
+      }
+
+      container.appendChild(
+        el("section", { class: "panel" }, [
+          el("h3", { class: "panel__title", text: topicId + " · " + AE.topics.titleOf(topicId) }),
+          el("div", { class: "panel__body" }, blocks)
+        ])
+      );
+    });
+
+    container.appendChild(
+      el("p", {
+        class: "empty",
+        text:
+          "「아직 제출하지 않은 학생」 목록은 학생 명단 파일을 연결한 경우에만 표시됩니다. 지금은 제출된 자료만 보여 줍니다."
+      })
+    );
+  }
+
+  T.analysis = { render: render };
+})();
+    </script>
+    <script data-from="teacher/t70-csv.js">
+/**
+ * CSV 내려받기 (명세 6.7)
+ *
+ *   · «지금 거르기 결과» 만 담는다
+ *   · UTF-8 BOM 을 붙여 엑셀에서 한글이 깨지지 않게 한다
+ *   · = + - @ 로 시작하는 학생 입력은 앞에 ' 를 붙여 수식으로 실행되지 않게 한다
+ *     (실제 만드는 일은 shared/schema.js 가 한다. 여기서는 파일로 저장만 한다)
+ */
+(function () {
+  "use strict";
+
+  var root = typeof window !== "undefined" ? window : globalThis;
+  var AE = root.AE || (root.AE = {});
+  var T = AE.teacher || (AE.teacher = {});
+
+  function download(rows, filters) {
+    var text = AE.schema.toCsv(rows);
+    var name = AE.schema.csvFileName(filters);
+
+    /* text/csv 로 지정하고 BOM 은 이미 문자열 안에 들어 있다 */
+    var blob = new Blob([text], { type: "text/csv;charset=utf-8;" });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = name;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function () {
+      URL.revokeObjectURL(url);
+    }, 1000);
+    return name;
+  }
+
+  T.csv = { download: download };
+})();
+    </script>
+    <script data-from="teacher/t90-main.js">
+/**
+ * 교사용 대시보드 본체 (명세 6.2 · 9.2)
+ *
+ * 화면 순서 : 안내 → 요약 카드 → 거르기 → 차트 → 제출 목록
+ * 거르기 조건은 한 곳(state.filters)에만 있고, 정렬·쪽 이동을 해도 그대로 남는다.
+ */
+(function () {
+  "use strict";
+
+  var root = typeof window !== "undefined" ? window : globalThis;
+  var AE = root.AE || (root.AE = {});
+  var T = AE.teacher || (AE.teacher = {});
+  if (typeof document === "undefined") return;
+
+  var c = T.core;
+  var el = c.el;
+
+  var state = {
+    all: [],
+    filters: T.filter.emptyFilters(),
+    lastLoaded: null,
+    source: "",
+    loading: false,
+    autoRefresh: false,
+    timer: null,
+    error: "",
+    /** 지금 보고 있는 쪽 — 1 주제별 분석 · 2 제출 목록 */
+    page: 1
+  };
+
+  /* ------------------------------------------------------------------ */
+  /* 쪽 이동 (명세 9.2 를 두 쪽으로 나눴다)                                 */
+  /* ------------------------------------------------------------------ */
+
+  /**
+   * 요약과 거르기는 위에 그대로 두고, 그 아래만 두 쪽으로 나눈다.
+   * 거르기 조건은 한 곳(state.filters)에만 있으므로 쪽을 옮겨도 그대로 걸린다.
+   */
+  var PAGES = [
+    { no: 1, label: "주제별 분석" },
+    { no: 2, label: "제출 목록" }
+  ];
+
+  /**
+   * 「한 쪽에 ○개씩」 — 제출 목록 단추 «옆에» 나란히 둔다.
+   * 표 아래 좁은 칸에 있으면 「한 / 쪽에」로 갈라져 두 줄이 되기 때문이다.
+   * (갈라지지 않도록 CSS 에서 white-space: nowrap 도 함께 준다)
+   */
+  function pageSizeControl() {
+    var id = "page-size";
+    var sel = el(
+      "select",
+      {
+        class: "input pagesize__select",
+        id: id,
+        on: {
+          change: function () {
+            state.filters.pageSize = parseInt(sel.value, 10);
+            state.filters.page = 1;
+            renderData();
+            /* 다시 그리면서 새로 만들어지므로 초점을 되돌려 준다 */
+            var again = c.$("#" + id);
+            if (again) again.focus();
+          }
+        }
+      },
+      T.filter.PAGE_SIZES.map(function (n) {
+        return el("option", { text: n + "개씩", attrs: { value: String(n) } });
+      })
+    );
+    sel.value = String(state.filters.pageSize);
+
+    return el("div", { class: "pagesize" }, [
+      el("label", { class: "pagesize__label", text: "한 쪽에", attrs: { for: id } }),
+      sel
+    ]);
+  }
+
+  function renderPageNav(rowCount) {
+    var box = c.$("#pagenav-area");
+    c.clear(box);
+
+    var tabs = PAGES.map(function (p) {
+      var on = state.page === p.no;
+      var btn = el("button", {
+        class: "pagetab" + (on ? " pagetab--on" : ""),
+        id: "tab-" + p.no,
+        attrs: {
+          type: "button",
+          role: "tab",
+          "aria-selected": on ? "true" : "false",
+          "aria-controls": "page-" + p.no,
+          tabindex: on ? "0" : "-1"
+        },
+        on: {
+          click: function () {
+            goToPage(p.no);
+          },
+          keydown: function (e) {
+            /* ← → 로도 쪽을 옮길 수 있게 한다 (명세 9.3 키보드) */
+            if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+            e.preventDefault();
+            var next = e.key === "ArrowRight" ? p.no + 1 : p.no - 1;
+            if (next < 1) next = PAGES.length;
+            if (next > PAGES.length) next = 1;
+            goToPage(next);
+            var moved = c.$("#tab-" + next);
+            if (moved) moved.focus();
+          }
+        }
+      }, [
+        el("span", { class: "pagetab__no", text: String(p.no) }),
+        el("span", { class: "pagetab__label", text: p.label })
+      ]);
+
+      /* 2쪽에는 지금 몇 건이 걸렸는지 함께 적어 준다 */
+      if (p.no === 2) {
+        btn.appendChild(el("span", { class: "pagetab__count", text: rowCount + "건" }));
+      }
+      return btn;
+    });
+
+    /* 「한 쪽에 ○개씩」 은 tablist «밖» 에 둔다.
+       tablist 안에는 탭만 있어야 스크린 리더가 「1/2」 를 바르게 읽는다. */
+    box.appendChild(
+      el("div", { class: "pagenav" }, [
+        el("div", { class: "pagetabs", attrs: { role: "tablist", "aria-label": "화면 이동" } }, tabs),
+        state.page === 2 ? pageSizeControl() : null
+      ])
+    );
+  }
+
+  function showPage() {
+    PAGES.forEach(function (p) {
+      var panel = c.$("#page-" + p.no);
+      if (panel) panel.hidden = state.page !== p.no;
+    });
+  }
+
+  function goToPage(no) {
+    if (state.page === no) return;
+    state.page = no;
+    renderPageNav(visibleRows().length);
+    showPage();
+
+    var panel = c.$("#page-" + no);
+    if (panel) {
+      panel.focus({ preventScroll: true });
+      if (typeof panel.scrollIntoView === "function") panel.scrollIntoView({ block: "start" });
+    }
+    c.announce(PAGES[no - 1].label + " 화면입니다.");
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* 안내 · 접근                                                          */
+  /* ------------------------------------------------------------------ */
+
+  function renderNotice() {
+    var box = c.$("#notice-area");
+    c.clear(box);
+
+    if (AE.config.isDemo()) {
+      box.appendChild(
+        el("div", { class: "notice notice--warn", attrs: { role: "note" } }, [
+          el("p", { class: "notice__title", text: "개발용: 인증 미적용 · 데모 모드" }),
+          el("p", {
+            class: "notice__text",
+            text:
+              AE.config.demoReason() +
+              " 지금 보이는 자료는 이 브라우저에 저장된 연습용 제출뿐입니다. 실제 수업에 쓰려면 shared/config.js 에 Apps Script 주소를 넣고 demoMode 를 false 로 바꾼 뒤 다시 빌드하세요."
+          })
+        ])
+      );
+      return;
+    }
+
+    box.appendChild(
+      el("div", { class: "notice notice--info", attrs: { role: "note" } }, [
+        el("p", { class: "notice__title", text: "학생 제출은 공유 드라이브에 JSON 파일로 쌓입니다" }),
+        el("p", {
+          class: "notice__text",
+          text:
+            "폴더에서 파일을 내려받아 아래에 끌어다 놓으면 바로 볼 수 있습니다. 주소로 한꺼번에 불러오려면 교사 확인 키가 필요하며, 키는 주소창에 남지 않고 탭을 닫으면 지워집니다."
+        })
+      ])
+    );
+  }
+
+  /**
+   * 자료 불러오기 — 두 가지 길 (명세 6.2)
+   *   ① 파일에서   : 드라이브 폴더에서 내려받은 JSON 을 고르거나 끌어다 놓는다 (권장)
+   *   ② 주소에서   : 학생에게 알려 준 /exec 주소 + 교사 확인 키로 한꺼번에 불러온다
+   */
+  function renderLoad() {
+    var box = c.$("#access-area");
+    c.clear(box);
+    if (AE.config.isDemo()) return;
+
+    /* ── ① 파일에서 ── */
+    var fileInput = el("input", {
+      class: "sr-only",
+      id: "file-input",
+      attrs: { type: "file", accept: ".json,application/json", multiple: true }
+    });
+    fileInput.addEventListener("change", function () {
+      loadFromFiles(fileInput.files);
+      fileInput.value = "";
+    });
+
+    var drop = el("div", { class: "dropzone", attrs: { tabindex: "0", role: "button" } }, [
+      el("p", { class: "dropzone__title", text: "제출 파일을 여기에 끌어다 놓으세요" }),
+      el("p", {
+        class: "dropzone__text",
+        text: "공유 드라이브 폴더의 .json 파일을 한꺼번에 선택해 끌어오면 됩니다."
+      }),
+      el("button", {
+        class: "btn btn--primary",
+        text: "파일 고르기",
+        attrs: { type: "button" },
+        on: {
+          click: function () {
+            fileInput.click();
+          }
+        }
+      }),
+      fileInput
+    ]);
+
+    ["dragenter", "dragover"].forEach(function (evt) {
+      drop.addEventListener(evt, function (e) {
+        e.preventDefault();
+        drop.classList.add("dropzone--over");
+      });
+    });
+    ["dragleave", "drop"].forEach(function (evt) {
+      drop.addEventListener(evt, function (e) {
+        e.preventDefault();
+        drop.classList.remove("dropzone--over");
+      });
+    });
+    drop.addEventListener("drop", function (e) {
+      var dt = e.dataTransfer;
+      if (dt && dt.files && dt.files.length) loadFromFiles(dt.files);
+    });
+    drop.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        fileInput.click();
+      }
+    });
+
+    /* ── ② 주소에서 ── */
+    var urlInput = el("input", {
+      class: "input",
+      id: "teacher-url",
+      attrs: { type: "url", placeholder: "https://script.google.com/macros/s/.../exec", autocomplete: "off" }
+    });
+    urlInput.value = AE.config.fixedUrl() || T.api.getUrl();
+    if (AE.config.fixedUrl()) urlInput.disabled = true;
+
+    var keyInput = el("input", {
+      class: "input input--short",
+      id: "teacher-key",
+      attrs: { type: "password", placeholder: "교사 확인 키", autocomplete: "off" }
+    });
+    keyInput.value = T.api.getKey();
+
+    var fetchBtn = el("button", {
+      class: "btn btn--ghost",
+      text: "주소로 불러오기",
+      attrs: { type: "button" },
+      on: {
+        click: function () {
+          if (!AE.config.fixedUrl()) T.api.setUrl(urlInput.value.trim());
+          T.api.setKey(keyInput.value.trim());
+          load();
+        }
+      }
+    });
+
+    box.appendChild(
+      el("div", { class: "load" }, [
+        el("div", { class: "load__col" }, [
+          el("h3", { class: "load__title", text: "① 파일에서 불러오기" }),
+          drop
+        ]),
+        el("div", { class: "load__col" }, [
+          el("h3", { class: "load__title", text: "② 주소로 불러오기" }),
+          el("div", { class: "load__form" }, [
+            el("label", { class: "field__label", text: "제출 주소", attrs: { for: "teacher-url" } }),
+            urlInput,
+            el("label", { class: "field__label", text: "교사 확인 키", attrs: { for: "teacher-key" } }),
+            el("div", { class: "access__row" }, [keyInput, fetchBtn]),
+            el("p", {
+              class: "load__note",
+              text: "제출이 많으면 주소로 불러오기가 느릴 수 있습니다. 그럴 때는 ① 을 쓰세요."
+            })
+          ])
+        ])
+      ])
+    );
+  }
+
+  /** 고른(또는 끌어다 놓은) 파일에서 불러온다 */
+  function loadFromFiles(files) {
+    state.loading = true;
+    state.error = "";
+    renderToolbar();
+
+    T.api.readFiles(files).then(
+      function (res) {
+        state.loading = false;
+        if (!res.ok) {
+          state.error = res.message || "읽을 수 있는 제출이 없습니다.";
+          renderAll();
+          return;
+        }
+        state.all = T.api.applyLocalMemos(res.submissions);
+        state.source = "file";
+        state.lastLoaded = res.generatedAt;
+        setAutoRefresh(false); // 파일은 저절로 새로워지지 않는다
+        renderAll();
+        var msg = "제출 " + res.submissions.length + "건을 읽었습니다.";
+        if (res.skipped && res.skipped.length) msg += " (건너뛴 파일 " + res.skipped.length + "개)";
+        c.toast(msg);
+        c.announce(msg);
+        if (res.skipped && res.skipped.length) {
+          state.error = "건너뛴 파일: " + res.skipped.join(", ");
+          renderToolbar();
+        }
+      },
+      function () {
+        state.loading = false;
+        state.error = "파일을 읽지 못했습니다.";
+        renderAll();
+      }
+    );
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* 도구 줄                                                              */
+  /* ------------------------------------------------------------------ */
+
+  function renderToolbar() {
+    var box = c.$("#toolbar-area");
+    c.clear(box);
+
+    var canRefresh = AE.config.isDemo() || T.api.canFetch();
+    var refreshBtn = el("button", {
+      class: "btn btn--ghost",
+      text: state.loading ? "불러오는 중…" : "새로고침",
+      attrs: {
+        type: "button",
+        disabled: state.loading || !canRefresh,
+        title: canRefresh ? null : "주소로 불러온 경우에만 쓸 수 있습니다"
+      },
+      on: { click: load }
+    });
+
+    var autoId = "auto-refresh";
+    var autoBox = el("input", {
+      id: autoId,
+      attrs: { type: "checkbox", disabled: !canRefresh },
+      class: "check__box"
+    });
+    autoBox.checked = state.autoRefresh;
+    autoBox.addEventListener("change", function () {
+      setAutoRefresh(autoBox.checked);
+    });
+
+    var csvBtn = el("button", {
+      class: "btn btn--ghost",
+      text: "CSV 내려받기",
+      attrs: { type: "button" },
+      on: {
+        click: function () {
+          var rows = visibleRows();
+          if (!rows.length) {
+            c.toast("내려받을 자료가 없습니다.");
+            return;
+          }
+          var name = T.csv.download(rows, state.filters);
+          c.toast(name + " 를 저장했습니다.");
+        }
+      }
+    });
+
+    box.appendChild(
+      el("div", { class: "toolbar" }, [
+        el("div", { class: "toolbar__left" }, [
+          refreshBtn,
+          el("div", { class: "toolbar__auto" }, [
+            autoBox,
+            el("label", {
+              class: "toolbar__autolabel",
+              text: "자동 새로고침 (" + (AE.CONFIG.teacherRefreshSeconds || 30) + "초)",
+              attrs: { for: autoId }
+            })
+          ])
+        ]),
+        el("div", { class: "toolbar__right" }, [
+          el("p", {
+            class: "toolbar__time",
+            text: state.lastLoaded
+              ? (state.source === "file" ? "파일에서 읽음 " : "마지막 갱신 ") + c.fmtTime(state.lastLoaded, true)
+              : "아직 불러오지 않았습니다"
+          }),
+          csvBtn
+        ])
+      ])
+    );
+
+    if (state.error) {
+      box.appendChild(
+        el("div", { class: "notice notice--warn", attrs: { role: "alert" } }, [
+          el("p", { class: "notice__title", text: "⚠ 자료를 불러오지 못했습니다" }),
+          el("p", { class: "notice__text", text: state.error })
+        ])
+      );
+    }
+  }
+
+  function setAutoRefresh(on) {
+    state.autoRefresh = on;
+    if (state.timer) {
+      clearInterval(state.timer);
+      state.timer = null;
+    }
+    if (on) {
+      var sec = AE.CONFIG.teacherRefreshSeconds || 30;
+      state.timer = setInterval(load, sec * 1000);
+    }
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* 거르기 줄                                                            */
+  /* ------------------------------------------------------------------ */
+
+  function selectField(id, label, options, value, onChange) {
+    var sel = el(
+      "select",
+      {
+        class: "input input--short",
+        id: id,
+        on: {
+          change: function () {
+            onChange(sel.value);
+          }
+        }
+      },
+      [el("option", { text: "전체", attrs: { value: "" } })].concat(
+        options.map(function (o) {
+          return el("option", { text: o.label, attrs: { value: String(o.value) } });
+        })
+      )
+    );
+    sel.value = value === null || value === undefined ? "" : String(value);
+    return el("div", { class: "field field--inline" }, [
+      el("label", { class: "field__label", text: label, attrs: { for: id } }),
+      sel
+    ]);
+  }
+
+  function renderFilters() {
+    var box = c.$("#filter-area");
+    c.clear(box);
+    var opts = T.filter.optionsFrom(state.all);
+
+    function set(key, value) {
+      state.filters[key] = value;
+      state.filters.page = 1;
+      renderAll();
+    }
+
+    var topicOptions = AE.topics.all
+      .filter(function (t) {
+        return !state.filters.unitId || t.unitId === state.filters.unitId;
+      })
+      .map(function (t) {
+        return { value: t.id, label: t.id + " · " + t.title };
+      });
+
+    var searchId = "q";
+    var search = el("input", {
+      class: "input",
+      id: searchId,
+      attrs: { type: "search", placeholder: "이름 또는 학번(예: 10312)" }
+    });
+    search.value = state.filters.query;
+    search.addEventListener("input", function () {
+      state.filters.query = search.value;
+      state.filters.page = 1;
+      /* 검색은 표와 요약만 다시 그린다 — 입력 칸이 다시 만들어지면 초점을 잃기 때문 */
+      renderData();
+    });
+
+    var resetBtn = el("button", {
+      class: "btn btn--tiny",
+      text: "조건 초기화",
+      attrs: { type: "button" },
+      on: {
+        click: function () {
+          var keepSize = state.filters.pageSize;
+          state.filters = T.filter.emptyFilters();
+          state.filters.pageSize = keepSize;
+          renderAll();
+        }
+      }
+    });
+
+    box.appendChild(
+      el("div", { class: "filters" }, [
+        selectField(
+          "f-unit",
+          "단원",
+          AE.UNITS.map(function (u) {
+            return { value: u.id, label: u.title };
+          }),
+          state.filters.unitId,
+          function (v) {
+            state.filters.unitId = v;
+            /* 단원을 바꾸면 그 단원에 없는 주제 선택은 푼다 */
+            var t = AE.topics.byId(state.filters.topicId);
+            if (v && t && t.unitId !== v) state.filters.topicId = "";
+            state.filters.page = 1;
+            renderAll();
+          }
+        ),
+        selectField("f-topic", "주제", topicOptions, state.filters.topicId, function (v) {
+          set("topicId", v);
+        }),
+        selectField(
+          "f-grade",
+          "학년",
+          opts.grades.map(function (v) {
+            return { value: v, label: v + "학년" };
+          }),
+          state.filters.grade,
+          function (v) {
+            set("grade", v);
+          }
+        ),
+        selectField(
+          "f-class",
+          "반",
+          opts.classNumbers.map(function (v) {
+            return { value: v, label: v + "반" };
+          }),
+          state.filters.classNumber,
+          function (v) {
+            set("classNumber", v);
+          }
+        ),
+        selectField(
+          "f-change",
+          "생각 변화",
+          AE.CHANGE_TYPES.map(function (v) {
+            return { value: v, label: v };
+          }),
+          state.filters.changeType,
+          function (v) {
+            set("changeType", v);
+          }
+        ),
+        el("div", { class: "field field--inline field--grow" }, [
+          el("label", { class: "field__label", text: "이름·학번 찾기", attrs: { for: searchId } }),
+          search
+        ]),
+        el("div", { class: "filters__actions" }, [resetBtn])
+      ])
+    );
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* 자료 그리기                                                          */
+  /* ------------------------------------------------------------------ */
+
+  function visibleRows() {
+    var filtered = T.filter.applyFilters(state.all, state.filters);
+    return T.filter.sortRows(filtered, state.filters.sortKey, state.filters.sortDir);
+  }
+
+  function renderData() {
+    var rows = visibleRows();
+    T.summary.render(c.$("#summary-area"), rows, state.filters);
+    T.analysis.render(c.$("#chart-area"), rows, state.filters);
+    renderPageNav(rows.length);
+    showPage();
+
+    var page = T.filter.paginate(rows, state.filters.page, state.filters.pageSize);
+    T.table.render(c.$("#table-area"), {
+      rows: rows,
+      page: page,
+      filters: state.filters,
+      onSort: function (key) {
+        if (state.filters.sortKey === key) {
+          state.filters.sortDir = state.filters.sortDir === "asc" ? "desc" : "asc";
+        } else {
+          state.filters.sortKey = key;
+          state.filters.sortDir = "asc";
+        }
+        renderData();
+      },
+      onPage: function (n) {
+        state.filters.page = n;
+        renderData();
+      },
+      onDetail: function (sub) {
+        T.detail.open(sub, {
+          onMemoSaved: function () {
+            renderData();
+          }
+        });
+      }
+    });
+  }
+
+  function renderAll() {
+    renderNotice();
+    renderLoad();
+    renderToolbar();
+    renderFilters();
+    renderData();
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* 불러오기                                                             */
+  /* ------------------------------------------------------------------ */
+
+  function load() {
+    if (state.loading) return;
+    state.loading = true;
+    state.error = "";
+    renderToolbar();
+
+    T.api.list({ topicId: state.filters.topicId }).then(
+      function (res) {
+        state.loading = false;
+        state.all = T.api.applyLocalMemos(res.submissions);
+        state.source = res.demo ? "demo" : "url";
+        state.lastLoaded = res.generatedAt;
+        renderAll();
+        c.announce("제출 " + res.submissions.length + "건을 불러왔습니다.");
+      },
+      function (err) {
+        state.loading = false;
+        state.error = (err && err.message) || "연결하지 못했습니다.";
+        renderAll();
+      }
+    );
+  }
+
+  function boot() {
+    renderAll();
+    /* 데모 모드에서는 바로 불러온다. 서버 모드에서는 키를 넣고 [확인하고 불러오기] 를 누른다. */
+    if (AE.config.isDemo()) load();
+    else if (T.api.canFetch() && T.api.getKey()) load();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", boot);
+  } else {
+    boot();
+  }
+})();
+    </script>
+  </body>
+</html>
